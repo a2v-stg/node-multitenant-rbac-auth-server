@@ -1,0 +1,9 @@
+<h1>Select Tenant</h1>
+<form method="post" action="/auth/select-tenant">
+  <select name="tenantId">
+    <% tenants.forEach(t => { %>
+      <option value="<%= t %>"><%= t %></option>
+    <% }) %>
+  </select>
+  <button type="submit">Continue</button>
+</form>

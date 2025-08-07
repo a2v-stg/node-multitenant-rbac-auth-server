@@ -1,0 +1,41 @@
+module.exports = {
+  testEnvironment: 'node',
+  testMatch: ['**/tests/**/*.test.js', '**/tests/**/*.spec.js'],
+  testPathIgnorePatterns: ['**/e2e/**'], // Exclude Playwright tests
+  collectCoverageFrom: [
+    'routes/**/*.js',
+    'services/**/*.js',
+    'middleware/**/*.js',
+    'models/**/*.js',
+    'utils/**/*.js',
+    'config/**/*.js',
+    '!**/node_modules/**',
+    '!**/coverage/**',
+    '!**/tests/**',
+    '!**/scripts/**',
+    '!**/migrations/**',
+  ],
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov', 'html', 'json'],
+  coverageThreshold: {
+    global: {
+      branches: 70,
+      functions: 70,
+      lines: 70,
+      statements: 70,
+    },
+  },
+  setupFilesAfterEnv: ['<rootDir>/tests/setup.js'],
+  moduleNameMapping: {
+    '^@src$': '<rootDir>/server',
+    '^@models$': '<rootDir>/server/models',
+    '^@services$': '<rootDir>/server/services',
+    '^@routes$': '<rootDir>/server/routes',
+    '^@middleware$': '<rootDir>/server/middleware',
+    '^@config$': '<rootDir>/server/config',
+    '^@utils$': '<rootDir>/server/utils',
+    '^@scripts$': '<rootDir>/server/scripts',
+    '^@migrations$': '<rootDir>/server/migrations',
+  },
+  testTimeout: 10000,
+};

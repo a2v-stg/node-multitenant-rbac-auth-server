@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - <%= tenant.name %></title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #007bff;
+        }
+        .user-details h1 {
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+        .user-details p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .tenant-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .tenant-info h2 {
+            margin: 0 0 10px 0;
+            color: #495057;
+        }
+        .rbac-info {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .rbac-info h3 {
+            margin: 0 0 15px 0;
+            color: #1976d2;
+        }
+        .roles-list, .permissions-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .role-badge, .permission-badge {
+            background: #1976d2;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+        }
+        .permission-badge {
+            background: #4caf50;
+        }
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .logout-btn:hover {
+            background: #c82333;
+        }
+        .oauth-badge {
+            background: #28a745;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        .content {
+            margin-top: 20px;
+        }
+        .metadata-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 4px;
+        }
+        .metadata-section h4 {
+            margin: 0 0 10px 0;
+        }
+        .metadata-section pre {
+            font-size: 12px;
+            overflow-x: auto;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="user-info">
+                <% if (user && user.picture) { %>
+                    <img src="<%= user.picture %>" alt="Profile Picture" class="user-avatar">
+                <% } else { %>
+                    <div class="user-avatar" style="background: #007bff; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">
+                        <% if (user && user.email) { %>
+                            <%= user.email.charAt(0).toUpperCase() %>
+                        <% } else { %>
+                            U
+                        <% } %>
+                    </div>
+                <% } %>
+                <div class="user-details">
+                    <h1>
+                        <% if (user) { %>
+                            <%= user.fullName || user.name || user.email || 'Unknown User' %>
+                            <% if (user.oauthProvider === 'oauth2') { %>
+                                <span class="oauth-badge">OAuth</span>
+                            <% } %>
+                        <% } else { %>
+                            Unknown User
+                        <% } %>
+                    </h1>
+                    <% if (user && user.email) { %>
+                        <p><strong>Email:</strong> <%= user.email %></p>
+                    <% } %>
+                    <% if (user && user.lastLogin) { %>
+                        <p><strong>Last Login:</strong> <%= new Date(user.lastLogin).toLocaleString() %></p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <div class="tenant-info">
+            <h2>Current Tenant: <%= tenant.name %></h2>
+            <p><strong>Tenant ID:</strong> <%= tenant.tenantId %></p>
+        </div>
+
+        <% if (typeof userRoles !== 'undefined' && userRoles.length > 0) { %>
+            <div class="rbac-info">
+                <h3>Your Roles & Permissions</h3>
+                <div class="roles-list">
+                    <% userRoles.forEach(role => { %>
+                        <span class="role-badge"><%= role.name %></span>
+                    <% }); %>
+                </div>
+                <% if (typeof userPermissions !== 'undefined' && userPermissions.length > 0) { %>
+                    <p><strong>Permissions:</strong></p>
+                    <div class="permissions-list">
+                        <% userPermissions.forEach(permission => { %>
+                            <span class="permission-badge"><%= permission %></span>
+                        <% }); %>
+                    </div>
+                <% } %>
+            </div>
+        <% } %>
+
+        <div class="content">
+            <h3>Welcome to your dashboard!</h3>
+            <p>You are currently logged into the <strong><%= tenant.name %></strong> tenant.</p>
+            
+            <% if (user && user.metadata && Object.keys(user.metadata).length > 0) { %>
+                <div class="metadata-section">
+                    <h4>OAuth Profile Information:</h4>
+                    <pre><%= JSON.stringify(user.metadata, null, 2) %></pre>
+                </div>
+            <% } %>
+        </div>
+
+        <a href="/auth/logout" class="logout-btn">Logout</a>
+    </div>
+</body>
+</html>

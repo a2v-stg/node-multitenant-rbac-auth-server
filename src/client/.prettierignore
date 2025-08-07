@@ -1,0 +1,9 @@
+node_modules/
+dist/
+*.min.js
+*.bundle.js
+coverage/
+.nyc_output/
+public/
+package-lock.json
+yarn.lock 

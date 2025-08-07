@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - <%= tenant.name %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .vue-app-container {
+            min-height: 100vh;
+        }
+        .loading-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+        }
+        .loading-spinner {
+            text-align: center;
+        }
+        .dashboard-container {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="vue-app-container">
+        <div class="loading-container">
+            <div class="loading-spinner">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-3">Loading Vue.js Dashboard...</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Dashboard Template -->
+    <script type="text/x-template" id="dashboard-template">
+        <div class="dashboard-container">
+            <div class="user-header">
+                <div class="user-info">
+                    <div class="user-avatar" v-if="user && user.picture">
+                        <img :src="user.picture" alt="Profile Picture" />
+                    </div>
+                    <div class="user-avatar" v-else>
+                        <span>{{ userInitial }}</span>
+                    </div>
+                    <div class="user-details">
+                        <h3>{{ userName }}</h3>
+                        <p v-if="user && user.email">{{ user.email }}</p>
+                        <p v-if="tenant">Tenant: {{ tenant.name }}</p>
+                    </div>
+                </div>
+                <div class="user-actions">
+                    <button @click="logout" class="btn btn-outline-danger btn-sm">
+                        <i class="fas fa-sign-out-alt me-1"></i>
+                        Logout
+                    </button>
+                </div>
+            </div>
+            
+            <div class="dashboard-content">
+                <h2>Welcome to your Dashboard!</h2>
+                <p>You are logged into the <strong>{{ tenant ? tenant.name : 'Unknown' }}</strong> tenant.</p>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>User Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Name:</strong> {{ userName }}</p>
+                                <p><strong>Email:</strong> {{ user ? user.email : 'N/A' }}</p>
+                                <p><strong>Tenant:</strong> {{ tenant ? tenant.name : 'N/A' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Roles & Permissions</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Roles:</strong></p>
+                                <div v-if="userRoles.length > 0">
+                                    <span v-for="role in userRoles" :key="role.name" class="badge bg-primary me-1">{{ role.name }}</span>
+                                </div>
+                                <p v-else>No roles assigned</p>
+                                
+                                <p><strong>Permissions:</strong></p>
+                                <div v-if="userPermissions.length > 0">
+                                    <span v-for="permission in userPermissions" :key="permission" class="badge bg-success me-1">{{ permission }}</span>
+                                </div>
+                                <p v-else>No permissions assigned</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <!-- Vue.js and dependencies -->
+    <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    
+    <script>
+        // Pass server-side data to Vue app
+        window.serverData = {
+            tenant: <%- JSON.stringify(tenant) %>,
+            user: <%- JSON.stringify(user) %>,
+            userRoles: <%- JSON.stringify(userRoles || []) %>,
+            userPermissions: <%- JSON.stringify(userPermissions || []) %>
+        };
+        
+        // Store server data in sessionStorage for Vue components to access
+        if (window.serverData) {
+            sessionStorage.setItem('tenant', JSON.stringify(window.serverData.tenant));
+            sessionStorage.setItem('user', JSON.stringify(window.serverData.user));
+            sessionStorage.setItem('userRoles', JSON.stringify(window.serverData.userRoles));
+            sessionStorage.setItem('userPermissions', JSON.stringify(window.serverData.userPermissions));
+            sessionStorage.setItem('tenant_name', window.serverData.tenant.name);
+            sessionStorage.setItem('isLoggedIn', 'true');
+        }
+        
+        // Create a simple Vue app for the dashboard
+        new Vue({
+            el: '#app',
+            template: '#dashboard-template',
+            data() {
+                return {
+                    user: null,
+                    tenant: null,
+                    userRoles: [],
+                    userPermissions: []
+                };
+            },
+            computed: {
+                userName() {
+                    if (!this.user) return 'Unknown User';
+                    return this.user.fullName || this.user.name || this.user.email || 'Unknown User';
+                },
+                userInitial() {
+                    if (!this.user || !this.user.email) return 'U';
+                    return this.user.email.charAt(0).toUpperCase();
+                }
+            },
+            methods: {
+                loadUserData() {
+                    try {
+                        const userStr = sessionStorage.getItem('user');
+                        const tenantStr = sessionStorage.getItem('tenant');
+                        const rolesStr = sessionStorage.getItem('userRoles');
+                        const permissionsStr = sessionStorage.getItem('userPermissions');
+                        
+                        if (userStr) this.user = JSON.parse(userStr);
+                        if (tenantStr) this.tenant = JSON.parse(tenantStr);
+                        if (rolesStr) this.userRoles = JSON.parse(rolesStr);
+                        if (permissionsStr) this.userPermissions = JSON.parse(permissionsStr);
+                    } catch (error) {
+                        console.error('Error loading user data:', error);
+                    }
+                },
+                logout() {
+                    // Clear session storage
+                    sessionStorage.clear();
+                    // Redirect to logout endpoint
+                    window.location.href = '/auth/logout';
+                }
+            },
+            mounted() {
+                this.loadUserData();
+            }
+        });
+    </script>
+    
+    <style>
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #007bff;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .user-details h3 {
+            margin: 0 0 5px 0;
+            font-size: 18px;
+            color: #333;
+        }
+        
+        .user-details p {
+            margin: 5px 0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .user-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .btn-outline-danger {
+            color: #dc3545;
+            border-color: #dc3545;
+            background: transparent;
+        }
+        
+        .btn-outline-danger:hover {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .dashboard-content {
+            padding: 20px;
+        }
+        
+        .card {
+            margin-bottom: 20px;
+        }
+        
+        .badge {
+            font-size: 12px;
+        }
+    </style>
+</body>
+</html> 

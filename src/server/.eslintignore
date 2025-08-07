@@ -1,0 +1,14 @@
+node_modules/
+logs/
+*.log
+coverage/
+.nyc_output/
+dist/
+build/
+client/dist/
+client/node_modules/
+stgcore-app-fde-engine/node_modules/
+stgcore-app-fde-engine/dist/
+stgcore-app-fde-engine/build/
+*.min.js
+*.bundle.js 
