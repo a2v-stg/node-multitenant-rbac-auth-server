@@ -11,6 +11,9 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 // Import Font Awesome
 import '@fortawesome/fontawesome-free/css/all.min.css'
 
+// Import Sample App Theme
+import './assets/scss/sample-app-theme.scss'
+
 // Create router
 const router = createRouter({
   history: createWebHistory(),

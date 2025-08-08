@@ -3,21 +3,9 @@
     <nav class="sidebar-nav">
       <ul class="nav flex-column">
         <li class="nav-item">
-          <router-link to="/sample" class="nav-link" active-class="active">
-            <i class="fas fa-laptop-code me-2"></i>
-            Demo App Usage
-          </router-link>
-        </li>
-        <li class="nav-item">
           <router-link to="/dashboard" class="nav-link" active-class="active">
             <i class="fas fa-tachometer-alt me-2"></i>
             Dashboard
-          </router-link>
-        </li>
-        <li class="nav-item">
-          <router-link to="/core-data" class="nav-link" active-class="active">
-            <i class="fas fa-database me-2"></i>
-            Core Data
           </router-link>
         </li>
         <li class="nav-item">

@@ -234,8 +234,9 @@
 
 <style scoped>
   .app-header {
-    background: white;
-    border-bottom: 1px solid #e9ecef;
+    background-color: #f4f8fa;
+    color: #002e6d;
+    border-bottom: 2px solid #002e6d;
     padding: 1rem 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
@@ -258,12 +259,12 @@
   }
 
   .tenant-switcher .dropdown-item.active {
-    background-color: #007bff;
+    background-color: #002e6d;
     color: white;
   }
 
   .tenant-switcher .dropdown-item:hover {
-    background-color: #f8f9fa;
+    background-color: #e9f1f5;
   }
 
   .dropdown-menu.show {
@@ -274,7 +275,7 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-color: #007bff;
+    background-color: #002e6d;
     color: white;
     display: flex;
     align-items: center;
@@ -298,10 +299,21 @@
   .user-name {
     font-weight: 600;
     font-size: 0.9rem;
+    color: #002e6d;
   }
 
   .user-email {
     font-size: 0.8rem;
     color: #6c757d;
+  }
+
+  .btn-outline-secondary {
+    color: #002e6d;
+    border-color: #002e6d;
+  }
+
+  .btn-outline-secondary:hover {
+    background-color: #002e6d;
+    color: white;
   }
 </style>

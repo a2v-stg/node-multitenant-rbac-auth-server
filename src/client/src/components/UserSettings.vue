@@ -26,7 +26,7 @@
                   <h6>Organization MFA Status</h6>
                   <div
                     v-if="organizationMfaConfig.enabled"
-                    class="alert alert-info"
+                    class=" alert-info"
                   >
                     <i class="fas fa-info-circle me-2"></i>
                     <strong>Organization MFA is Enabled</strong> - Two-factor
@@ -37,7 +37,7 @@
                       | Methods: {{ organizationMfaConfig.methods.join(', ') }}
                     </small>
                   </div>
-                  <div v-else class="alert alert-secondary">
+                  <div v-else class=" alert-secondary">
                     <i class="fas fa-info-circle me-2"></i>
                     <strong>Organization MFA is Disabled</strong> - Two-factor
                     authentication is optional
@@ -51,13 +51,13 @@
                   <h6>Your MFA Status</h6>
                   <div
                     v-if="user.mfaSetupCompleted"
-                    class="alert alert-success"
+                    class=" alert-success"
                   >
                     <i class="fas fa-check-circle me-2"></i>
                     <strong>Enabled</strong> - Your account is protected with
                     {{ getMethodDisplayName(user.mfaMethod) }}
                   </div>
-                  <div v-else class="alert alert-warning">
+                  <div v-else class=" alert-warning">
                     <i class="fas fa-exclamation-triangle me-2"></i>
                     <strong>Disabled</strong> - Your account is not protected
                     with two-factor authentication
@@ -202,7 +202,7 @@
                       </div>
 
                       <!-- Success Message -->
-                      <div v-if="mfaSetupSuccess" class="alert alert-success">
+                      <div v-if="mfaSetupSuccess" class=" alert-success">
                         <i class="fas fa-check-circle me-2"></i>
                         Two-factor authentication has been enabled successfully!
                       </div>

@@ -1,5 +1,5 @@
 <template>
-  <AppLayout>
+  <AppLayoutWrapper>
     <div class="core-data-container">
       <!-- Page Header -->
       <div class="page-header mb-4">
@@ -125,7 +125,14 @@
     </div>
 
     <!-- Detail Modal -->
-    <div class="modal fade" id="detailModal" tabindex="-1">
+    <div 
+      v-if="selectedItem" 
+      class="modal fade show" 
+      id="detailModal" 
+      tabindex="-1"
+      style="display: block;"
+      @click.self="closeModal"
+    >
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
@@ -133,11 +140,11 @@
             <button
               type="button"
               class="btn-close"
-              data-bs-dismiss="modal"
+              @click="closeModal"
             ></button>
           </div>
           <div class="modal-body">
-            <pre v-if="selectedItem" class="bg-light p-3 rounded">{{
+            <pre class="bg-light p-3 rounded">{{
               JSON.stringify(selectedItem, null, 2)
             }}</pre>
           </div>
@@ -145,27 +152,28 @@
             <button
               type="button"
               class="btn btn-secondary"
-              data-bs-dismiss="modal"
+              @click="closeModal"
             >
               Close
             </button>
           </div>
         </div>
       </div>
+      <div class="modal-backdrop fade show"></div>
     </div>
-  </AppLayout>
+  </AppLayoutWrapper>
 </template>
 
 <script>
   import { ref, computed } from 'vue'
   import DataTable from '../components/DataTable.vue'
-  import AppLayout from '../components/AppLayout.vue'
+  import AppLayoutWrapper from '../components/AppLayoutWrapper.vue'
 
   export default {
     name: 'CoreData',
     components: {
       DataTable,
-      AppLayout,
+      AppLayoutWrapper,
     },
     setup() {
       const activeTab = ref('decisions')
@@ -220,83 +228,68 @@
       ]
 
       const eventColumns = [
-        { key: 'applicationNumber', label: 'Application #', sortable: true },
-        { key: 'validationType', label: 'Validation Type', sortable: true },
-        {
-          key: 'validationStatus',
-          label: 'Status',
-          type: 'status',
-          sortable: true,
-        },
-        { key: 'score', label: 'Score', sortable: true },
-        {
-          key: 'retroreviewed',
-          label: 'Reviewed',
-          type: 'boolean',
-          sortable: true,
-        },
-        { key: 'createdTime', label: 'Created', type: 'date', sortable: true },
+        { key: 'eventType', label: 'Event Type', sortable: true },
+        { key: 'eventSource', label: 'Source', sortable: true },
+        { key: 'eventStatus', label: 'Status', type: 'status', sortable: true },
+        { key: 'createdAt', label: 'Created', type: 'date', sortable: true },
       ]
 
       const errorColumns = [
         { key: 'errorType', label: 'Error Type', sortable: true },
-        { key: 'validationType', label: 'Validation Type', sortable: true },
-        {
-          key: 'retryStatus',
-          label: 'Retry Status',
-          type: 'status',
-          sortable: true,
-        },
-        { key: 'retryCount', label: 'Retry Count', sortable: true },
+        { key: 'errorMessage', label: 'Message', sortable: true },
+        { key: 'errorStatus', label: 'Status', type: 'status', sortable: true },
         { key: 'createdAt', label: 'Created', type: 'date', sortable: true },
       ]
 
       const blacklistColumns = [
-        { key: 'entityValue', label: 'Entity Value', sortable: true },
         { key: 'entityType', label: 'Entity Type', sortable: true },
+        { key: 'entityValue', label: 'Entity Value', sortable: true },
+        { key: 'blacklistStatus', label: 'Status', type: 'status', sortable: true },
         { key: 'createdAt', label: 'Created', type: 'date', sortable: true },
       ]
 
       const securityViolationColumns = [
         { key: 'violationType', label: 'Violation Type', sortable: true },
-        { key: 'severity', label: 'Severity', type: 'status', sortable: true },
+        { key: 'severity', label: 'Severity', sortable: true },
+        { key: 'violationStatus', label: 'Status', type: 'status', sortable: true },
         { key: 'createdAt', label: 'Created', type: 'date', sortable: true },
       ]
 
       const retroReviewColumns = [
-        {
-          key: 'reviewStatus',
-          label: 'Review Status',
-          type: 'status',
-          sortable: true,
-        },
         { key: 'reviewType', label: 'Review Type', sortable: true },
+        { key: 'reviewStatus', label: 'Status', type: 'status', sortable: true },
+        { key: 'reviewDate', label: 'Review Date', type: 'date', sortable: true },
         { key: 'createdAt', label: 'Created', type: 'date', sortable: true },
       ]
 
       // Filter configurations
       const decisionFilters = [
-        { key: 'decision', label: 'Decision Type' },
         { key: 'applicationNumber', label: 'Application Number' },
+        { key: 'fdeReference', label: 'FDE Reference' },
+        { key: 'validation.decision', label: 'Decision' },
       ]
 
       const documentFilters = [
+        { key: 'documentName', label: 'Document Name' },
         { key: 'documentType', label: 'Document Type' },
         { key: 'fraudulentDocumentStatus', label: 'Fraudulent Status' },
       ]
 
       const eventFilters = [
-        { key: 'validationType', label: 'Validation Type' },
-        { key: 'validationStatus', label: 'Validation Status' },
-        { key: 'retroreviewed', label: 'Reviewed Status' },
+        { key: 'eventType', label: 'Event Type' },
+        { key: 'eventSource', label: 'Event Source' },
+        { key: 'eventStatus', label: 'Event Status' },
       ]
 
       const errorFilters = [
         { key: 'errorType', label: 'Error Type' },
-        { key: 'retryStatus', label: 'Retry Status' },
+        { key: 'errorStatus', label: 'Error Status' },
       ]
 
-      const blacklistFilters = [{ key: 'entityType', label: 'Entity Type' }]
+      const blacklistFilters = [
+        { key: 'entityType', label: 'Entity Type' },
+        { key: 'blacklistStatus', label: 'Blacklist Status' },
+      ]
 
       const securityViolationFilters = [
         { key: 'violationType', label: 'Violation Type' },
@@ -312,11 +305,17 @@
       const showDetailModal = (item, title) => {
         selectedItem.value = item
         detailModalTitle.value = title
-        // Use Bootstrap modal API
-        const modal = new bootstrap.Modal(
-          document.getElementById('detailModal')
-        )
-        modal.show()
+        // Add escape key handler
+        const handleEscape = (event) => {
+          if (event.key === 'Escape') {
+            closeModal()
+          }
+        }
+        document.addEventListener('keydown', handleEscape)
+        // Store cleanup function
+        selectedItem.value._cleanup = () => {
+          document.removeEventListener('keydown', handleEscape)
+        }
       }
 
       const viewDecision = item => {
@@ -375,6 +374,15 @@
         showDetailModal(item, 'Edit Retro Review')
       }
 
+      const closeModal = () => {
+        // Clean up event listeners
+        if (selectedItem.value && selectedItem.value._cleanup) {
+          selectedItem.value._cleanup()
+        }
+        selectedItem.value = null
+        detailModalTitle.value = ''
+      }
+
       return {
         activeTab,
         tabs,
@@ -408,6 +416,7 @@
         editSecurityViolation,
         viewRetroReview,
         editRetroReview,
+        closeModal,
       }
     },
   }
@@ -440,5 +449,25 @@
     max-height: 400px;
     overflow-y: auto;
     font-size: 0.875rem;
+  }
+
+  /* Ensure modal is properly positioned */
+  .modal.show {
+    display: block !important;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+  }
+
+  .modal {
+    z-index: 1050;
   }
 </style>

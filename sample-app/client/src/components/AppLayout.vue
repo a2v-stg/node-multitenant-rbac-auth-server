@@ -33,6 +33,7 @@
   .app-layout {
     display: flex;
     min-height: 100vh;
+    background-color: #e2eaef;
   }
 
   .main-content {
@@ -40,12 +41,13 @@
     margin-left: 250px;
     display: flex;
     flex-direction: column;
+    background-color: #e2eaef;
   }
 
   .page-content {
     flex: 1;
     padding: 2rem;
-    background-color: #f8f9fa;
+    background-color: #e2eaef;
     min-height: calc(100vh - 80px);
   }
 </style>

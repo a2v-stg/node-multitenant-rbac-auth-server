@@ -1,5 +1,5 @@
 <template>
-  <AppLayout>
+  <AppLayoutWrapper>
     <div class="sample-container">
       <!-- Page Header -->
       <div class="page-header mb-4">
@@ -204,16 +204,16 @@
         </div>
       </div>
     </div>
-  </AppLayout>
+  </AppLayoutWrapper>
 </template>
 
 <script>
-  import AppLayout from '@admin/components/AppLayout.vue'
+  import AppLayoutWrapper from '../components/AppLayoutWrapper.vue'
 
   export default {
     name: 'Sample',
     components: {
-      AppLayout,
+      AppLayoutWrapper,
     },
   }
 </script>

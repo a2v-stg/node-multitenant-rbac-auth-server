@@ -1,0 +1,271 @@
+// Sample App Theme - Based on Legacy Design
+// Primary Color Scheme
+$primary: #002e6d;
+$secondary: #b8252b;
+$tertiary: #66b3ff;
+$light: #f4f8fa;
+$grey: #e9f1f5;
+$text-light: #f0f0f0;
+$primary-font-color: #002e6d;
+$primary-text-color: black;
+$primary-font-family: 'Noto Sans', Avenir, Helvetica, Arial, sans-serif;
+
+// Sample App Theme Variables
+:root {
+  --sample-app-primary: #{$primary};
+  --sample-app-secondary: #{$secondary};
+  --sample-app-tertiary: #{$tertiary};
+  --sample-app-light: #{$light};
+  --sample-app-grey: #{$grey};
+  --sample-app-text-light: #{$text-light};
+  --sample-app-primary-font-color: #{$primary-font-color};
+  --sample-app-primary-text-color: #{$primary-text-color};
+  --sample-app-primary-font-family: #{$primary-font-family};
+}
+
+// Global Sample App Styles
+.sample-app-theme {
+  font-family: $primary-font-family;
+  color: $primary-font-color;
+  background-color: #e2eaef;
+
+  // Sidebar Styling
+  .app-sidebar {
+    background: $primary !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+
+    .nav-link {
+      color: $light !important;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      background: transparent;
+      transition: all 0.3s ease;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+      &:hover {
+        color: $light !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+      }
+
+      &.active {
+        color: $light !important;
+        background: $secondary !important;
+        border-left: 3px solid $secondary;
+      }
+
+      i {
+        width: 20px;
+        text-align: center;
+        color: $light;
+      }
+    }
+  }
+
+  // Header Styling
+  .app-header {
+    background-color: $light !important;
+    color: $primary !important;
+    border-bottom: 2px solid $primary;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    .navbar-brand {
+      color: $primary !important;
+      font-weight: bold;
+    }
+
+    .nav-link {
+      color: $primary !important;
+      
+      &:hover {
+        color: $secondary !important;
+      }
+    }
+  }
+
+  // Main Content Styling
+  .main-content {
+    background-color: #e2eaef;
+  }
+
+  .page-content {
+    background-color: #e2eaef;
+  }
+
+  // Card Styling
+  .card {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background-color: white;
+
+    .card-header {
+      background-color: $light;
+      border-bottom: 1px solid $grey;
+      color: $primary;
+      font-weight: 600;
+    }
+  }
+
+  // Button Styling
+  .btn-primary {
+    background-color: $primary !important;
+    border-color: $primary !important;
+    color: white !important;
+    font-family: $primary-font-family;
+    font-weight: 500;
+
+    &:hover {
+      background-color: darken($primary, 10%) !important;
+      border-color: darken($primary, 10%) !important;
+    }
+  }
+
+  .btn-secondary {
+    background-color: $secondary !important;
+    border-color: $secondary !important;
+    color: white !important;
+    font-family: $primary-font-family;
+    font-weight: 500;
+
+    &:hover {
+      background-color: darken($secondary, 10%) !important;
+      border-color: darken($secondary, 10%) !important;
+    }
+  }
+
+  .btn-outline-primary {
+    color: $primary !important;
+    border-color: $primary !important;
+
+    &:hover {
+      background-color: $primary !important;
+      color: white !important;
+    }
+  }
+
+  // Table Styling
+  .table {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    thead th {
+      background-color: $light;
+      color: $primary;
+      font-weight: 600;
+      border-bottom: 2px solid $primary;
+    }
+
+    tbody tr {
+      &:hover {
+        background-color: rgba($tertiary, 0.1);
+      }
+    }
+  }
+
+  // Form Styling
+  .form-control {
+    border: 1px solid $grey;
+    border-radius: 4px;
+
+    &:focus {
+      border-color: $primary;
+      box-shadow: 0 0 0 0.2rem rgba($primary, 0.25);
+    }
+  }
+
+  // Alert Styling
+  .alert-info {
+    background-color: rgba($tertiary, 0.1);
+    border-color: $tertiary;
+    color: $primary;
+  }
+
+  .alert-success {
+    background-color: rgba(green, 0.1);
+    border-color: green;
+    color: darken(green, 10%);
+  }
+
+  .alert-warning {
+    background-color: rgba(orange, 0.1);
+    border-color: orange;
+    color: darken(orange, 10%);
+  }
+
+  .alert-danger {
+    background-color: rgba($secondary, 0.1);
+    border-color: $secondary;
+    color: $secondary;
+  }
+
+  // Navigation Styling
+  .nav-tabs {
+    border-bottom: 2px solid $primary;
+
+    .nav-link {
+      color: $primary;
+      border: none;
+      border-bottom: 2px solid transparent;
+
+      &:hover {
+        color: $secondary;
+        border-bottom-color: $secondary;
+      }
+
+      &.active {
+        color: $secondary;
+        border-bottom-color: $secondary;
+        background-color: transparent;
+      }
+    }
+  }
+
+  // Modal Styling
+  .modal-header {
+    background-color: $light;
+    border-bottom: 1px solid $grey;
+    color: $primary;
+  }
+
+  .modal-footer {
+    background-color: $light;
+    border-top: 1px solid $grey;
+  }
+
+  // Badge Styling
+  .badge-primary {
+    background-color: $primary;
+  }
+
+  .badge-secondary {
+    background-color: $secondary;
+  }
+
+  // Text Colors
+  .text-primary {
+    color: $primary !important;
+  }
+
+  .text-secondary {
+    color: $secondary !important;
+  }
+
+  // Background Colors
+  .bg-primary {
+    background-color: $primary !important;
+  }
+
+  .bg-secondary {
+    background-color: $secondary !important;
+  }
+
+  .bg-light {
+    background-color: $light !important;
+  }
+
+  .bg-grey {
+    background-color: $grey !important;
+  }
+} 

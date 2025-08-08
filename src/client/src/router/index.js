@@ -1,7 +1,6 @@
 import Login from '../views/Login.vue'
 import Dashboard from '../views/Dashboard.vue'
 import TenantSelection from '../views/TenantSelection.vue'
-import CoreData from '../views/CoreData.vue'
 import TenantManagement from '../views/TenantManagement.vue'
 import UserManagement from '../views/UserManagement.vue'
 import Mfa from '../views/Mfa.vue'
@@ -51,12 +50,6 @@ const routes = [
     path: '/tenant-selection',
     name: 'TenantSelection',
     component: TenantSelection,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/core-data',
-    name: 'CoreData',
-    component: CoreData,
     meta: { requiresAuth: true },
   },
   {

@@ -3,6 +3,12 @@
     <nav class="sidebar-nav">
       <ul class="nav flex-column">
         <li class="nav-item">
+          <router-link to="/sample" class="nav-link" active-class="active">
+            <i class="fas fa-laptop-code me-2"></i>
+            Demo App Usage
+          </router-link>
+        </li>
+        <li class="nav-item">
           <router-link to="/dashboard" class="nav-link" active-class="active">
             <i class="fas fa-tachometer-alt me-2"></i>
             Dashboard
@@ -12,12 +18,6 @@
           <router-link to="/core-data" class="nav-link" active-class="active">
             <i class="fas fa-database me-2"></i>
             Core Data
-          </router-link>
-        </li>
-        <li class="nav-item">
-          <router-link to="/blacklist" class="nav-link" active-class="active">
-            <i class="fas fa-ban me-2"></i>
-            Blacklist Management
           </router-link>
         </li>
         <li class="nav-item">
@@ -58,12 +58,13 @@
 <style scoped>
   .app-sidebar {
     width: 250px;
-    background: #2c3e50;
+    background: #002e6d;
     min-height: 100vh;
     position: fixed;
     left: 0;
     top: 0;
     z-index: 1000;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .sidebar-nav {
@@ -71,26 +72,28 @@
   }
 
   .nav-link {
-    color: #ecf0f1;
+    color: #f4f8fa;
     padding: 0.75rem 1.5rem;
     border: none;
     background: transparent;
     transition: all 0.3s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .nav-link:hover {
-    color: #3498db;
-    background: rgba(52, 152, 219, 0.1);
+    color: #f4f8fa;
+    background: rgba(255, 255, 255, 0.1);
   }
 
   .nav-link.active {
-    color: #3498db;
-    background: rgba(52, 152, 219, 0.2);
-    border-left: 3px solid #3498db;
+    color: #f4f8fa;
+    background: #b8252b;
+    border-left: 3px solid #b8252b;
   }
 
   .nav-link i {
     width: 20px;
     text-align: center;
+    color: #f4f8fa;
   }
 </style>

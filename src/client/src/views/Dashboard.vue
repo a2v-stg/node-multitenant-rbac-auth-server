@@ -143,7 +143,7 @@
                     <div class="col-md-6 col-sm-6 mb-3">
                       <button
                         class="btn btn-outline-success w-100"
-                        @click="navigateTo('/roles')"
+                        @click="navigateTo('/rbac')"
                       >
                         <i class="fas fa-user-tag me-2"></i>
                         Manage Roles
