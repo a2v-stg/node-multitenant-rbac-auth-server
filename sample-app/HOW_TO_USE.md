@@ -279,11 +279,11 @@ export default {
   provide() {
     return {
       // Sample-app specific components
-      sampleAppSidebar: AppSidebar,
-      sampleAppHeader: AppHeader,
-      sampleAppLayout: AppLayout,
+      parentAppSidebar: AppSidebar,
+      parentAppHeader: AppHeader,
+      parentAppLayout: AppLayout,
       // Theme information
-      sampleAppTheme: {
+      parentAppTheme: {
         primary: '#002e6d',
         secondary: '#b8252b',
         tertiary: '#66b3ff',
@@ -291,7 +291,7 @@ export default {
         grey: '#e9f1f5'
       },
       // Context flag
-      isSampleApp: true
+      isParentApp: true
     }
   }
 }
@@ -309,12 +309,12 @@ To use the theming system in your components:
 export default {
   name: 'MyComponent',
   inject: {
-    sampleAppTheme: { default: null },
-    isSampleApp: { default: false }
+    parentAppTheme: { default: null },
+    isParentApp: { default: false }
   },
   computed: {
     themeColors() {
-      return this.sampleAppTheme || {
+      return this.parentAppTheme || {
         primary: '#007bff',
         secondary: '#6c757d'
       }
@@ -330,7 +330,7 @@ Components automatically adapt to the injected theme:
 ```javascript
 // src/client/src/components/AppLayout.vue
 <template>
-  <div class="app-layout" :class="{ 'sample-app-theme': isSampleApp }">
+  <div class="app-layout" :class="{ 'sample-app-theme': isParentApp }">
     <component :is="sidebarComponent" />
     <div class="main-content">
       <component :is="headerComponent" />
@@ -345,17 +345,17 @@ Components automatically adapt to the injected theme:
 export default {
   name: 'AppLayout',
   inject: {
-    sampleAppSidebar: { default: null },
-    sampleAppHeader: { default: null },
-    isSampleApp: { default: false },
-    sampleAppTheme: { default: null }
+    parentAppSidebar: { default: null },
+    parentAppHeader: { default: null },
+    isParentApp: { default: false },
+    parentAppTheme: { default: null }
   },
   computed: {
     sidebarComponent() {
-      return this.isSampleApp && this.sampleAppSidebar ? this.sampleAppSidebar : AppSidebar
+      return this.isParentApp && this.parentAppSidebar ? this.parentAppSidebar : AppSidebar
     },
     headerComponent() {
-      return this.isSampleApp && this.sampleAppHeader ? this.sampleAppHeader : AppHeader
+      return this.isParentApp && this.parentAppHeader ? this.parentAppHeader : AppHeader
     }
   }
 }
@@ -371,11 +371,11 @@ You can customize the theme by overriding CSS variables:
 ```scss
 // In your component or global styles
 :root {
-  --sample-app-primary: #your-primary-color;
-  --sample-app-secondary: #your-secondary-color;
-  --sample-app-tertiary: #your-tertiary-color;
-  --sample-app-light: #your-light-color;
-  --sample-app-grey: #your-grey-color;
+  --parent-app-primary: #your-primary-color;
+  --parent-app-secondary: #your-secondary-color;
+  --parent-app-tertiary: #your-tertiary-color;
+  --parent-app-light: #your-light-color;
+  --parent-app-grey: #your-grey-color;
 }
 ```
 
@@ -388,16 +388,16 @@ You can extend the theme by adding custom styles:
 .sample-app-theme {
   // Your custom styles
   .custom-component {
-    background-color: var(--sample-app-primary);
+    background-color: var(--parent-app-primary);
     color: white;
   }
   
   .custom-button {
-    background-color: var(--sample-app-secondary);
-    border-color: var(--sample-app-secondary);
+    background-color: var(--parent-app-secondary);
+    border-color: var(--parent-app-secondary);
     
     &:hover {
-      background-color: darken(var(--sample-app-secondary), 10%);
+      background-color: darken(var(--parent-app-secondary), 10%);
     }
   }
 }
@@ -448,8 +448,8 @@ const customTheme = {
 export default {
   provide() {
     return {
-      sampleAppTheme: customTheme,
-      isSampleApp: true
+      parentAppTheme: customTheme,
+      isParentApp: true
     }
   }
 }
@@ -562,8 +562,8 @@ Enable theme debugging:
 
 ```javascript
 // In your component
-console.log('Theme:', this.sampleAppTheme);
-console.log('Is Sample App:', this.isSampleApp);
+console.log('Theme:', this.parentAppTheme);
+console.log('Is Sample App:', this.isParentApp);
 ```
 
 ## API Documentation

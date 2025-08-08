@@ -1,4 +1,4 @@
-// Sample App Theme - Based on Legacy Design
+// Parent App Theme - Based on Legacy Design
 // Primary Color Scheme
 $primary: #002e6d;
 $secondary: #b8252b;
@@ -12,15 +12,15 @@ $primary-font-family: 'Noto Sans', Avenir, Helvetica, Arial, sans-serif;
 
 // Sample App Theme Variables
 :root {
-  --sample-app-primary: #{$primary};
-  --sample-app-secondary: #{$secondary};
-  --sample-app-tertiary: #{$tertiary};
-  --sample-app-light: #{$light};
-  --sample-app-grey: #{$grey};
-  --sample-app-text-light: #{$text-light};
-  --sample-app-primary-font-color: #{$primary-font-color};
-  --sample-app-primary-text-color: #{$primary-text-color};
-  --sample-app-primary-font-family: #{$primary-font-family};
+  --parent-app-primary: #{$primary};
+  --parent-app-secondary: #{$secondary};
+  --parent-app-tertiary: #{$tertiary};
+  --parent-app-light: #{$light};
+  --parent-app-grey: #{$grey};
+  --parent-app-text-light: #{$text-light};
+  --parent-app-primary-font-color: #{$primary-font-color};
+  --parent-app-primary-text-color: #{$primary-text-color};
+  --parent-app-primary-font-family: #{$primary-font-family};
 }
 
 // Global Sample App Styles

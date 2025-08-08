@@ -5,6 +5,8 @@
   "scripts": {
     "start": "nodemon app.js",
     "dev": "NODE_ENV=development nodemon app.js",
+    "standalone": "NODE_ENV=development nodemon standalone.js",
+    "standalone:prod": "NODE_ENV=production node standalone.js",
     "prod": "NODE_ENV=production node app.js",
     "init-db": "node scripts/initDb.js",
     "migrate": "node scripts/migrate.js migrate",

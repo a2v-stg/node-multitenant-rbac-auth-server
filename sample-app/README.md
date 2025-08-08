@@ -74,7 +74,7 @@ The sample-app implements a sophisticated dependency injection and theming syste
   - Wraps entire application with `sample-app-theme` class
   - Provides sample-app components (AppSidebar, AppHeader, AppLayout)
   - Provides theme information and styling context
-  - Sets `isSampleApp: true` flag for context awareness
+  - Sets `isParentApp: true` flag for context awareness
 
 #### 2. Theme System
 - **Purpose**: Comprehensive SCSS-based theming system
@@ -113,17 +113,17 @@ export default {
   name: 'ComponentProvider',
   provide() {
     return {
-      sampleAppSidebar: AppSidebar,
-      sampleAppHeader: AppHeader,
-      sampleAppLayout: AppLayout,
-      sampleAppTheme: {
+      parentAppSidebar: AppSidebar,
+      parentAppHeader: AppHeader,
+      parentAppLayout: AppLayout,
+      parentAppTheme: {
         primary: '#002e6d',
         secondary: '#b8252b',
         tertiary: '#66b3ff',
         light: '#f4f8fa',
         grey: '#e9f1f5'
       },
-      isSampleApp: true
+      isParentApp: true
     }
   }
 }
@@ -134,14 +134,14 @@ export default {
 // AppLayout.vue
 export default {
   inject: {
-    sampleAppSidebar: { default: null },
-    sampleAppHeader: { default: null },
-    isSampleApp: { default: false },
-    sampleAppTheme: { default: null }
+    parentAppSidebar: { default: null },
+    parentAppHeader: { default: null },
+    isParentApp: { default: false },
+    parentAppTheme: { default: null }
   },
   computed: {
     sidebarComponent() {
-      return this.isSampleApp && this.sampleAppSidebar ? this.sampleAppSidebar : AppSidebar
+      return this.isParentApp && this.parentAppSidebar ? this.parentAppSidebar : AppSidebar
     }
   }
 }

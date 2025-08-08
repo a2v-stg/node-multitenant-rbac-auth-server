@@ -1,5 +1,5 @@
 <template>
-  <component :is="currentLayout" v-bind="$attrs" :class="{ 'sample-app-theme': isSampleApp }">
+  <component :is="currentLayout" v-bind="$attrs" :class="{ 'sample-app-theme': isParentApp }">
     <slot />
   </component>
 </template>
@@ -13,15 +13,15 @@ export default {
     AppLayout
   },
   inject: {
-    sampleAppLayout: { default: null },
-    isSampleApp: { default: false },
-    sampleAppTheme: { default: null }
+    parentAppLayout: { default: null },
+    isParentApp: { default: false },
+    parentAppTheme: { default: null }
   },
   computed: {
     currentLayout() {
       // Use sample-app layout if available and we're in sample-app context
-      if (this.isSampleApp && this.sampleAppLayout) {
-        return this.sampleAppLayout
+      if (this.isParentApp && this.parentAppLayout) {
+        return this.parentAppLayout
       }
       // Fall back to admin layout
       return AppLayout

@@ -6,7 +6,7 @@ try {
   // Test that we can require the sample-app server
   console.log('Testing sample-app server...');
   
-  const sampleAppServer = require('../server/app');
+  const parentAppServer = require('../server/app');
   console.log('✅ Sample app server loaded');
   
   // Test admin-ui imports in sample-app

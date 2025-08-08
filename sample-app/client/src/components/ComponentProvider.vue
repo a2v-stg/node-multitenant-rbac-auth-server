@@ -15,13 +15,13 @@ export default {
   provide() {
     return {
       // Provide sample-app specific components
-      sampleAppSidebar: AppSidebar,
-      sampleAppHeader: AppHeader,
-      sampleAppLayout: AppLayout,
+      parentAppSidebar: AppSidebar,
+      parentAppHeader: AppHeader,
+      parentAppLayout: AppLayout,
       // Flag to indicate we're in sample-app context
-      isSampleApp: true,
+      isParentApp: true,
       // Provide theme information
-      sampleAppTheme: {
+      parentAppTheme: {
         primary: '#002e6d',
         secondary: '#b8252b',
         tertiary: '#66b3ff',

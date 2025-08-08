@@ -1,5 +1,5 @@
 <template>
-  <div class="app-layout" :class="{ 'sample-app-theme': isSampleApp }">
+  <div class="app-layout" :class="{ 'sample-app-theme': isParentApp }">
     <!-- Sidebar -->
     <component :is="sidebarComponent" />
 
@@ -27,19 +27,19 @@
       AppSidebar,
     },
     inject: {
-      sampleAppSidebar: { default: null },
-      sampleAppHeader: { default: null },
-      isSampleApp: { default: false },
-      sampleAppTheme: { default: null }
+      parentAppSidebar: { default: null },
+      parentAppHeader: { default: null },
+      isParentApp: { default: false },
+      parentAppTheme: { default: null }
     },
     computed: {
       sidebarComponent() {
         // Use sample-app sidebar if available and we're in sample-app context
-        return this.isSampleApp && this.sampleAppSidebar ? this.sampleAppSidebar : AppSidebar
+        return this.isParentApp && this.parentAppSidebar ? this.parentAppSidebar : AppSidebar
       },
       headerComponent() {
         // Use sample-app header if available and we're in sample-app context
-        return this.isSampleApp && this.sampleAppHeader ? this.sampleAppHeader : AppHeader
+        return this.isParentApp && this.parentAppHeader ? this.parentAppHeader : AppHeader
       }
     }
   }

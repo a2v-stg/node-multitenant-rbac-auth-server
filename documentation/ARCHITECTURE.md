@@ -40,11 +40,11 @@ export default {
   provide() {
     return {
       // Sample-app specific components
-      sampleAppSidebar: AppSidebar,
-      sampleAppHeader: AppHeader,
-      sampleAppLayout: AppLayout,
+      parentAppSidebar: AppSidebar,
+      parentAppHeader: AppHeader,
+      parentAppLayout: AppLayout,
       // Theme information
-      sampleAppTheme: {
+      parentAppTheme: {
         primary: '#002e6d',
         secondary: '#b8252b',
         tertiary: '#66b3ff',
@@ -52,7 +52,7 @@ export default {
         grey: '#e9f1f5'
       },
       // Context flag
-      isSampleApp: true
+      isParentApp: true
     }
   }
 }
@@ -66,14 +66,14 @@ Components automatically adapt to the injected theme:
 // AppLayout.vue - Adapts to sample-app theme when available
 export default {
   inject: {
-    sampleAppSidebar: { default: null },
-    sampleAppHeader: { default: null },
-    isSampleApp: { default: false },
-    sampleAppTheme: { default: null }
+    parentAppSidebar: { default: null },
+    parentAppHeader: { default: null },
+    isParentApp: { default: false },
+    parentAppTheme: { default: null }
   },
   computed: {
     sidebarComponent() {
-      return this.isSampleApp && this.sampleAppSidebar ? this.sampleAppSidebar : AppSidebar
+      return this.isParentApp && this.parentAppSidebar ? this.parentAppSidebar : AppSidebar
     }
   }
 }

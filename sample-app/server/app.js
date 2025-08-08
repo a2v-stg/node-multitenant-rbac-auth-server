@@ -196,8 +196,8 @@ async function initializeApp() {
   });
 
   // Import and mount sample-app specific routes
-  const sampleAppRoutes = require('./routes');
-  app.use('/api', sampleAppRoutes);
+  const parentAppRoutes = require('./routes');
+  app.use('/api', parentAppRoutes);
 
   // Get middleware from admin-ui submodule
   const { ensureTenantSelected, errorHandler } = adminUI.getMiddleware();
