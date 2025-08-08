@@ -199,6 +199,273 @@ export const newService = {
 };
 ```
 
+## Frontend Development
+
+### Component Development
+
+#### Creating New Components
+
+```javascript
+// src/client/src/components/NewComponent.vue
+<template>
+  <div class="new-component">
+    <h3>{{ title }}</h3>
+    <slot />
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'NewComponent',
+  props: {
+    title: {
+      type: String,
+      default: 'Default Title'
+    }
+  }
+}
+</script>
+
+<style scoped>
+.new-component {
+  padding: 1rem;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+}
+</style>
+```
+
+### Dependency Injection & Theming System
+
+#### Overview
+
+The sample-app implements a sophisticated dependency injection and theming system that ensures complete visual consistency across different implementations. This system allows the sample-app to provide its own components and styling to child components, even when they're from the admin submodule.
+
+#### 1. Component Provider Setup
+
+```javascript
+// sample-app/client/src/components/ComponentProvider.vue
+<template>
+  <div class="sample-app-theme">
+    <slot />
+  </div>
+</template>
+
+<script>
+import AppSidebar from './AppSidebar.vue'
+import AppHeader from './AppHeader.vue'
+import AppLayout from './AppLayout.vue'
+import '../assets/scss/sample-app-theme.scss'
+
+export default {
+  name: 'ComponentProvider',
+  provide() {
+    return {
+      // Sample-app specific components
+      sampleAppSidebar: AppSidebar,
+      sampleAppHeader: AppHeader,
+      sampleAppLayout: AppLayout,
+      // Theme information
+      sampleAppTheme: {
+        primary: '#002e6d',
+        secondary: '#b8252b',
+        tertiary: '#66b3ff',
+        light: '#f4f8fa',
+        grey: '#e9f1f5'
+      },
+      // Context flag
+      isSampleApp: true
+    }
+  }
+}
+</script>
+```
+
+#### 2. Theme-Aware Components
+
+Components automatically adapt to the injected theme:
+
+```javascript
+// src/client/src/components/AppLayout.vue
+<template>
+  <div class="app-layout" :class="{ 'sample-app-theme': isSampleApp }">
+    <component :is="sidebarComponent" />
+    <div class="main-content">
+      <component :is="headerComponent" />
+      <main class="page-content">
+        <slot />
+      </main>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'AppLayout',
+  inject: {
+    sampleAppSidebar: { default: null },
+    sampleAppHeader: { default: null },
+    isSampleApp: { default: false },
+    sampleAppTheme: { default: null }
+  },
+  computed: {
+    sidebarComponent() {
+      return this.isSampleApp && this.sampleAppSidebar ? this.sampleAppSidebar : AppSidebar
+    },
+    headerComponent() {
+      return this.isSampleApp && this.sampleAppHeader ? this.sampleAppHeader : AppHeader
+    }
+  }
+}
+</script>
+```
+
+#### 3. SCSS Theming System
+
+The sample-app features a comprehensive SCSS-based theming system:
+
+```scss
+// sample-app/client/src/assets/scss/sample-app-theme.scss
+// Primary Color Scheme
+$primary: #002e6d;      // Dark Blue
+$secondary: #b8252b;    // Red
+$tertiary: #66b3ff;     // Light Blue
+$light: #f4f8fa;        // Light Gray
+$grey: #e9f1f5;         // Medium Gray
+
+// Global Sample App Styles
+.sample-app-theme {
+  font-family: 'Noto Sans', Avenir, Helvetica, Arial, sans-serif;
+  color: $primary-font-color;
+  background-color: #e2eaef;
+
+  // Sidebar Styling
+  .app-sidebar {
+    background: $primary !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+
+    .nav-link {
+      color: $light !important;
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.1) !important;
+      }
+
+      &.active {
+        background: $secondary !important;
+        border-left: 3px solid $secondary;
+      }
+    }
+  }
+
+  // Header Styling
+  .app-header {
+    background-color: $light !important;
+    color: $primary !important;
+    border-bottom: 2px solid $primary;
+  }
+
+  // Card Styling
+  .card {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+  }
+}
+```
+
+#### 4. Using the Theming System
+
+To use the theming system in your components:
+
+```javascript
+// In your Vue component
+export default {
+  name: 'MyComponent',
+  inject: {
+    sampleAppTheme: { default: null },
+    isSampleApp: { default: false }
+  },
+  computed: {
+    themeColors() {
+      return this.sampleAppTheme || {
+        primary: '#007bff',
+        secondary: '#6c757d'
+      }
+    }
+  }
+}
+```
+
+#### 5. Integration with Parent Applications
+
+Parent applications can integrate the theming system:
+
+```javascript
+// In parent app's main.js
+import { ComponentProvider } from '@admin-ui/components';
+import '@admin-ui/assets/scss/sample-app-theme.scss';
+
+// Wrap the application
+const app = createApp(App);
+app.component('ComponentProvider', ComponentProvider);
+```
+
+```vue
+<!-- In parent app's App.vue -->
+<template>
+  <div id="app">
+    <ComponentProvider>
+      <router-view />
+    </ComponentProvider>
+  </div>
+</template>
+```
+
+#### 6. Theme Customization
+
+To customize the theme for your application:
+
+```scss
+// Override theme variables
+:root {
+  --sample-app-primary: #your-primary-color;
+  --sample-app-secondary: #your-secondary-color;
+  --sample-app-tertiary: #your-tertiary-color;
+}
+
+// Or extend the theme
+.sample-app-theme {
+  // Your custom styles
+  .custom-component {
+    background-color: var(--sample-app-primary);
+    color: white;
+  }
+}
+```
+
+### Component Testing
+
+#### Unit Testing Components
+
+```javascript
+// src/client/src/components/__tests__/NewComponent.test.js
+import { mount } from '@vue/test-utils'
+import NewComponent from '../NewComponent.vue'
+
+describe('NewComponent', () => {
+  test('renders title prop', () => {
+    const wrapper = mount(NewComponent, {
+      props: {
+        title: 'Test Title'
+      }
+    })
+    
+    expect(wrapper.text()).toContain('Test Title')
+  })
+})
+```
+
 ## Database Management
 
 ### Migrations

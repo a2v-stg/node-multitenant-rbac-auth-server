@@ -1,6 +1,6 @@
 # Admin UI Sample App - How to Use Guide
 
-This guide provides comprehensive instructions for setting up, configuring, and using the Admin UI Sample App with the FDE (Fraud Detection Engine) integration.
+This guide provides comprehensive instructions for setting up, configuring, and using the Admin UI Sample App with the FDE (Fraud Detection Engine) integration. **The app now features a comprehensive dependency injection and theming system that ensures complete visual consistency.**
 
 ## Table of Contents
 
@@ -10,6 +10,7 @@ This guide provides comprehensive instructions for setting up, configuring, and 
 - [Configuration](#configuration)
 - [Running the Application](#running-the-application)
 - [Features & Usage](#features--usage)
+- [Dependency Injection & Theming System](#dependency-injection--theming-system)
 - [API Documentation](#api-documentation)
 - [Troubleshooting](#troubleshooting)
 - [Architecture](#architecture)
@@ -18,6 +19,8 @@ This guide provides comprehensive instructions for setting up, configuring, and 
 
 The Admin UI Sample App demonstrates the integration of the `admin-ui` submodule with a complete fraud detection system. It provides:
 
+- **Complete Visual Consistency**: Comprehensive theming system with legacy design (Primary: #002e6d, Secondary: #b8252b)
+- **Dependency Injection System**: Advanced component injection that ensures even submodule components use the correct theme
 - **Dashboard**: Real-time statistics and analytics from FDE data
 - **RBAC Management**: Role-Based Access Control with permissions
 - **Settings Management**: Organization and system configuration
@@ -214,6 +217,355 @@ Each section provides:
 - **Pagination**: Efficient data browsing
 - **Export**: Data export functionality (where applicable)
 
+## Dependency Injection & Theming System
+
+The Admin UI Sample App implements a sophisticated dependency injection and theming system that ensures complete visual consistency across different implementations. This system allows the sample-app to provide its own components and styling to child components, even when they're from the admin submodule.
+
+### Overview
+
+The theming system consists of three main components:
+
+1. **ComponentProvider**: Provides sample-app components and theme to child components
+2. **Theme System**: Comprehensive SCSS-based theming with legacy design
+3. **Theme-Aware Components**: Components that automatically adapt to injected theme
+
+### 1. Theme Configuration
+
+#### Environment Variables
+
+You can configure themes using environment variables:
+
+```env
+# Theme Configuration (Optional)
+SAMPLE_APP_THEME=legacy
+SAMPLE_APP_PRIMARY_COLOR=#002e6d
+SAMPLE_APP_SECONDARY_COLOR=#b8252b
+SAMPLE_APP_TERTIARY_COLOR=#66b3ff
+SAMPLE_APP_LIGHT_COLOR=#f4f8fa
+SAMPLE_APP_GREY_COLOR=#e9f1f5
+```
+
+#### Default Color Scheme
+
+The sample-app uses a comprehensive color scheme based on the legacy design:
+
+- **Primary**: #002e6d (Dark Blue) - Main brand color
+- **Secondary**: #b8252b (Red) - Accent and active states
+- **Tertiary**: #66b3ff (Light Blue) - Hover and interactive elements
+- **Light**: #f4f8fa (Light Gray) - Backgrounds and subtle elements
+- **Grey**: #e9f1f5 (Medium Gray) - Borders and dividers
+- **Background**: #e2eaef (Light Blue-Gray) - Main application background
+
+### 2. Component Provider Setup
+
+The `ComponentProvider` is the core of the dependency injection system:
+
+```javascript
+// sample-app/client/src/components/ComponentProvider.vue
+<template>
+  <div class="sample-app-theme">
+    <slot />
+  </div>
+</template>
+
+<script>
+import AppSidebar from './AppSidebar.vue'
+import AppHeader from './AppHeader.vue'
+import AppLayout from './AppLayout.vue'
+import '../assets/scss/sample-app-theme.scss'
+
+export default {
+  name: 'ComponentProvider',
+  provide() {
+    return {
+      // Sample-app specific components
+      sampleAppSidebar: AppSidebar,
+      sampleAppHeader: AppHeader,
+      sampleAppLayout: AppLayout,
+      // Theme information
+      sampleAppTheme: {
+        primary: '#002e6d',
+        secondary: '#b8252b',
+        tertiary: '#66b3ff',
+        light: '#f4f8fa',
+        grey: '#e9f1f5'
+      },
+      // Context flag
+      isSampleApp: true
+    }
+  }
+}
+</script>
+```
+
+### 3. Using the Theming System
+
+#### In Your Components
+
+To use the theming system in your components:
+
+```javascript
+// In your Vue component
+export default {
+  name: 'MyComponent',
+  inject: {
+    sampleAppTheme: { default: null },
+    isSampleApp: { default: false }
+  },
+  computed: {
+    themeColors() {
+      return this.sampleAppTheme || {
+        primary: '#007bff',
+        secondary: '#6c757d'
+      }
+    }
+  }
+}
+```
+
+#### Theme-Aware Components
+
+Components automatically adapt to the injected theme:
+
+```javascript
+// src/client/src/components/AppLayout.vue
+<template>
+  <div class="app-layout" :class="{ 'sample-app-theme': isSampleApp }">
+    <component :is="sidebarComponent" />
+    <div class="main-content">
+      <component :is="headerComponent" />
+      <main class="page-content">
+        <slot />
+      </main>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'AppLayout',
+  inject: {
+    sampleAppSidebar: { default: null },
+    sampleAppHeader: { default: null },
+    isSampleApp: { default: false },
+    sampleAppTheme: { default: null }
+  },
+  computed: {
+    sidebarComponent() {
+      return this.isSampleApp && this.sampleAppSidebar ? this.sampleAppSidebar : AppSidebar
+    },
+    headerComponent() {
+      return this.isSampleApp && this.sampleAppHeader ? this.sampleAppHeader : AppHeader
+    }
+  }
+}
+</script>
+```
+
+### 4. Customizing Themes
+
+#### Overriding Theme Variables
+
+You can customize the theme by overriding CSS variables:
+
+```scss
+// In your component or global styles
+:root {
+  --sample-app-primary: #your-primary-color;
+  --sample-app-secondary: #your-secondary-color;
+  --sample-app-tertiary: #your-tertiary-color;
+  --sample-app-light: #your-light-color;
+  --sample-app-grey: #your-grey-color;
+}
+```
+
+#### Extending the Theme
+
+You can extend the theme by adding custom styles:
+
+```scss
+// Extend the sample-app theme
+.sample-app-theme {
+  // Your custom styles
+  .custom-component {
+    background-color: var(--sample-app-primary);
+    color: white;
+  }
+  
+  .custom-button {
+    background-color: var(--sample-app-secondary);
+    border-color: var(--sample-app-secondary);
+    
+    &:hover {
+      background-color: darken(var(--sample-app-secondary), 10%);
+    }
+  }
+}
+```
+
+### 5. Integration with Parent Applications
+
+#### Basic Integration
+
+Parent applications can integrate the theming system:
+
+```javascript
+// In parent app's main.js
+import { ComponentProvider } from '@admin-ui/components';
+import '@admin-ui/assets/scss/sample-app-theme.scss';
+
+// Wrap the application
+const app = createApp(App);
+app.component('ComponentProvider', ComponentProvider);
+```
+
+```vue
+<!-- In parent app's App.vue -->
+<template>
+  <div id="app">
+    <ComponentProvider>
+      <router-view />
+    </ComponentProvider>
+  </div>
+</template>
+```
+
+#### Advanced Integration
+
+For more advanced integration, you can pass custom themes:
+
+```javascript
+// Custom theme configuration
+const customTheme = {
+  primary: '#1a365d',
+  secondary: '#e53e3e',
+  tertiary: '#3182ce',
+  light: '#f7fafc',
+  grey: '#e2e8f0'
+};
+
+// In your ComponentProvider
+export default {
+  provide() {
+    return {
+      sampleAppTheme: customTheme,
+      isSampleApp: true
+    }
+  }
+}
+```
+
+### 6. Theme System Architecture
+
+#### File Structure
+
+```
+sample-app/client/src/
+├── components/
+│   ├── ComponentProvider.vue     # Dependency injection provider
+│   ├── AppLayoutWrapper.vue      # Theme-aware layout wrapper
+│   ├── AppSidebar.vue            # Sample-app sidebar
+│   ├── AppHeader.vue             # Sample-app header
+│   └── AppLayout.vue             # Sample-app layout
+├── assets/
+│   └── scss/
+│       └── sample-app-theme.scss # Comprehensive theme
+└── views/
+    └── Sample.vue                # Demo page with theme examples
+```
+
+#### SCSS Theme Structure
+
+```scss
+// sample-app-theme.scss
+$primary: #002e6d;
+$secondary: #b8252b;
+$tertiary: #66b3ff;
+$light: #f4f8fa;
+$grey: #e9f1f5;
+
+.sample-app-theme {
+  font-family: 'Noto Sans', Avenir, Helvetica, Arial, sans-serif;
+  color: $primary-font-color;
+  background-color: #e2eaef;
+
+  // Component-specific styling
+  .app-sidebar {
+    background: $primary !important;
+    .nav-link.active {
+      background: $secondary !important;
+    }
+  }
+
+  .app-header {
+    background-color: $light !important;
+    color: $primary !important;
+  }
+
+  .card {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+  }
+}
+```
+
+### 7. Best Practices
+
+#### Theme Usage Guidelines
+
+1. **Always use CSS variables** for theme colors to ensure consistency
+2. **Test with different themes** to ensure your components work well
+3. **Use semantic color names** (primary, secondary) rather than specific colors
+4. **Provide fallbacks** for when theme variables are not available
+5. **Document theme requirements** for your components
+
+#### Component Development
+
+```javascript
+// Good: Use theme variables
+export default {
+  computed: {
+    componentStyle() {
+      return {
+        backgroundColor: this.themeColors.primary,
+        color: 'white'
+      }
+    }
+  }
+}
+
+// Avoid: Hard-coded colors
+export default {
+  data() {
+    return {
+      style: {
+        backgroundColor: '#002e6d', // Don't do this
+        color: 'white'
+      }
+    }
+  }
+}
+```
+
+### 8. Troubleshooting Themes
+
+#### Common Issues
+
+1. **Theme not applying**: Ensure ComponentProvider is wrapping your application
+2. **Colors not updating**: Check if CSS variables are properly defined
+3. **Component not themed**: Verify the component is using the injected theme
+4. **Styling conflicts**: Use `!important` sparingly and prefer CSS specificity
+
+#### Debug Mode
+
+Enable theme debugging:
+
+```javascript
+// In your component
+console.log('Theme:', this.sampleAppTheme);
+console.log('Is Sample App:', this.isSampleApp);
+```
+
 ## API Documentation
 
 ### Authentication Endpoints
@@ -347,6 +699,14 @@ sample-app/
 ├── client/                 # Vue.js frontend
 │   ├── src/
 │   │   ├── components/     # Reusable Vue components
+│   │   │   ├── ComponentProvider.vue  # Dependency injection provider
+│   │   │   ├── AppLayoutWrapper.vue   # Theme-aware layout wrapper
+│   │   │   ├── AppSidebar.vue         # Sample-app sidebar
+│   │   │   ├── AppHeader.vue          # Sample-app header
+│   │   │   └── AppLayout.vue          # Sample-app layout
+│   │   ├── assets/         # Theme and styling assets
+│   │   │   └── scss/       # SCSS theme system
+│   │   │       └── sample-app-theme.scss  # Comprehensive theme
 │   │   ├── views/         # Page components
 │   │   ├── router/        # Vue Router configuration
 │   │   └── main.js        # App entry point
@@ -366,6 +726,7 @@ sample-app/
 2. **FDE Engine**: Supplies data models and business logic
 3. **MongoDB**: Shared database instance across all components
 4. **Session Management**: Unified authentication across submodules
+5. **Dependency Injection System**: Provides theme-aware components and styling
 
 ### Data Flow
 
@@ -379,6 +740,18 @@ Admin UI Submodule
 MongoDB Collections (FDE Data)
 ```
 
+### Theme System Flow
+
+```
+ComponentProvider (Theme Provider)
+    ↓ Theme Injection
+Theme-Aware Components
+    ↓ Dynamic Component Selection
+Sample-App Components (with legacy styling)
+    ↓ Fallback
+Admin UI Components (default styling)
+```
+
 ### Security Model
 
 - **Authentication**: OAuth2 + Local authentication
@@ -386,6 +759,7 @@ MongoDB Collections (FDE Data)
 - **Session Management**: Secure session cookies
 - **Tenant Isolation**: Data segregation by `tenantId`
 - **Permission Validation**: Middleware-based permission checking
+- **Theme Security**: Secure theme injection with fallback support
 
 ---
 

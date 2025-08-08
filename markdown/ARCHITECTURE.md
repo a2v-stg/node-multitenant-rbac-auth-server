@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Admin UI is designed as a reusable submodule that provides comprehensive user management, role-based access control (RBAC), and organizational settings functionality. It can be integrated into parent applications while maintaining clean separation of concerns.
+The Admin UI is designed as a reusable submodule that provides comprehensive user management, role-based access control (RBAC), and organizational settings functionality. It can be integrated into parent applications while maintaining clean separation of concerns. The system now features a comprehensive **dependency injection and theming system** that ensures complete visual consistency across different implementations.
 
 ## Architecture Design
 
@@ -15,15 +15,92 @@ admin-ui/
 │   │   ├── components/  # Reusable UI components
 │   │   ├── views/       # Page components (Dashboard, RBAC, Settings)
 │   │   ├── router/      # Vue Router configuration
-│   │   └── services/    # Frontend service layer
+│   │   ├── services/    # Frontend service layer
+│   │   └── assets/      # Styling and theme assets
 │   └── server/          # Node.js backend
 │       ├── routes/      # API route handlers
 │       ├── middleware/  # Authentication, RBAC, validation
 │       ├── models/      # Database models (User, Role, Tenant, etc.)
 │       ├── services/    # Business logic services
 │       └── config/      # Configuration and permissions
-├── sample-app/          # Reference implementation
+├── sample-app/          # Reference implementation with theming system
 └── package.json         # Main package configuration
+```
+
+### Dependency Injection & Theming System
+
+#### 1. Component Provider Pattern
+
+The sample-app implements a sophisticated dependency injection system that ensures complete visual consistency:
+
+```javascript
+// ComponentProvider.vue - Provides sample-app components and theme
+export default {
+  name: 'ComponentProvider',
+  provide() {
+    return {
+      // Sample-app specific components
+      sampleAppSidebar: AppSidebar,
+      sampleAppHeader: AppHeader,
+      sampleAppLayout: AppLayout,
+      // Theme information
+      sampleAppTheme: {
+        primary: '#002e6d',
+        secondary: '#b8252b',
+        tertiary: '#66b3ff',
+        light: '#f4f8fa',
+        grey: '#e9f1f5'
+      },
+      // Context flag
+      isSampleApp: true
+    }
+  }
+}
+```
+
+#### 2. Theme-Aware Components
+
+Components automatically adapt to the injected theme:
+
+```javascript
+// AppLayout.vue - Adapts to sample-app theme when available
+export default {
+  inject: {
+    sampleAppSidebar: { default: null },
+    sampleAppHeader: { default: null },
+    isSampleApp: { default: false },
+    sampleAppTheme: { default: null }
+  },
+  computed: {
+    sidebarComponent() {
+      return this.isSampleApp && this.sampleAppSidebar ? this.sampleAppSidebar : AppSidebar
+    }
+  }
+}
+```
+
+#### 3. Comprehensive Theming System
+
+The sample-app features a complete SCSS-based theming system:
+
+```scss
+// sample-app-theme.scss - Legacy design system
+$primary: #002e6d;      // Dark Blue
+$secondary: #b8252b;    // Red
+$tertiary: #66b3ff;     // Light Blue
+$light: #f4f8fa;        // Light Gray
+$grey: #e9f1f5;         // Medium Gray
+
+.sample-app-theme {
+  font-family: 'Noto Sans', Avenir, Helvetica, Arial, sans-serif;
+  color: $primary-font-color;
+  background-color: #e2eaef;
+  
+  // Component-specific styling
+  .app-sidebar { background: $primary; }
+  .app-header { background-color: $light; }
+  .card { box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
+}
 ```
 
 ### Integration Points
@@ -68,6 +145,21 @@ const { authMiddleware, rbacMiddleware } = adminUI.getMiddleware();
 app.get('/protected', authMiddleware.ensureAuthenticated, (req, res) => {
   // Protected route logic
 });
+```
+
+#### 4. Theme Integration
+
+The theming system can be integrated into parent applications:
+
+```javascript
+// Parent app can use the sample-app theme system
+import { ComponentProvider } from '@admin-ui/components';
+import '@admin-ui/assets/scss/sample-app-theme.scss';
+
+// Wrap the application with theme provider
+<ComponentProvider>
+  <router-view />
+</ComponentProvider>
 ```
 
 ## Core Components

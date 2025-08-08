@@ -7,7 +7,7 @@
           <div class="col">
             <h1 class="h3 mb-0">Sample App Demo</h1>
             <p class="text-muted mb-0">
-              This is a demonstration of the sample-app using the same UI and functionality as the submodule
+              This is a demonstration of the sample-app using the same UI and functionality as the submodule with complete visual consistency
             </p>
           </div>
         </div>
@@ -29,13 +29,15 @@
                 <p class="mb-3">
                   This sample-app demonstrates how you can easily integrate and reuse the admin-ui submodule 
                   with minimal configuration while maintaining the exact same look, feel, and functionality.
+                  <strong>The app now features a comprehensive dependency injection and theming system that ensures complete visual consistency.</strong>
                 </p>
                 <div class="alert alert-info">
                   <i class="fas fa-lightbulb me-2"></i>
                   <strong>Key Features:</strong>
                   <ul class="mb-0 mt-2">
-                    <li>Identical UI/UX as the submodule app</li>
-                    <li>Same components, layouts, and styling</li>
+                    <li>Identical UI/UX as the submodule app with legacy design system</li>
+                    <li>Complete visual consistency through dependency injection</li>
+                    <li>Legacy color scheme and styling (Primary: #002e6d, Secondary: #b8252b)</li>
                     <li>Full functionality including MFA, tenant management, user management</li>
                     <li>Easy customization and extension capabilities</li>
                     <li>Minimal code changes required</li>
@@ -53,13 +55,14 @@
               <div class="card-header">
                 <h5 class="card-title mb-0">
                   <i class="fas fa-palette me-2"></i>
-                  UI/UX Consistency
+                  Complete Visual Consistency
                 </h5>
               </div>
               <div class="card-body">
                 <p class="card-text">
-                  The sample-app uses the exact same components, layouts, and styling as the submodule, 
-                  ensuring a consistent user experience across different implementations.
+                  The sample-app now uses a comprehensive theming system that ensures complete visual consistency 
+                  with the legacy design. All components, including those from the submodule, inherit the sample-app's 
+                  styling through dependency injection.
                 </p>
                 <div class="d-grid">
                   <router-link to="/dashboard" class="btn btn-outline-primary">
@@ -76,13 +79,13 @@
               <div class="card-header">
                 <h5 class="card-title mb-0">
                   <i class="fas fa-cogs me-2"></i>
-                  Full Functionality
+                  Dependency Injection System
                 </h5>
               </div>
               <div class="card-body">
                 <p class="card-text">
-                  All features from the submodule are available: MFA, tenant management, user management, 
-                  blacklist management, and more.
+                  Advanced dependency injection system that provides sample-app components and styling to all child components, 
+                  ensuring that even submodule components use the correct theme and styling.
                 </p>
                 <div class="d-grid">
                   <router-link to="/core-data" class="btn btn-outline-success">
@@ -99,13 +102,13 @@
               <div class="card-header">
                 <h5 class="card-title mb-0">
                   <i class="fas fa-code me-2"></i>
-                  Easy Customization
+                  Legacy Design System
                 </h5>
               </div>
               <div class="card-body">
                 <p class="card-text">
-                  The modular architecture allows for easy customization and extension while maintaining 
-                  the core functionality from the submodule.
+                  Complete implementation of the legacy design system with proper color scheme, typography, 
+                  and component styling that matches the original application design.
                 </p>
                 <div class="d-grid">
                   <router-link to="/settings" class="btn btn-outline-info">
@@ -133,23 +136,61 @@
                   <div class="col-md-6">
                     <h6>Components Used:</h6>
                     <ul class="list-unstyled">
-                      <li><i class="fas fa-check text-success me-2"></i>AppLayout - Main layout component</li>
-                      <li><i class="fas fa-check text-success me-2"></i>AppHeader - Header with tenant switcher</li>
-                      <li><i class="fas fa-check text-success me-2"></i>AppSidebar - Navigation sidebar</li>
+                      <li><i class="fas fa-check text-success me-2"></i>AppLayoutWrapper - Dynamic layout with theme injection</li>
+                      <li><i class="fas fa-check text-success me-2"></i>ComponentProvider - Dependency injection provider</li>
+                      <li><i class="fas fa-check text-success me-2"></i>AppHeader - Header with legacy styling</li>
+                      <li><i class="fas fa-check text-success me-2"></i>AppSidebar - Navigation with legacy color scheme</li>
                       <li><i class="fas fa-check text-success me-2"></i>DataTable - Reusable data table</li>
-                      <li><i class="fas fa-check text-success me-2"></i>BlacklistManagement - Blacklist functionality</li>
-                      <li><i class="fas fa-check text-success me-2"></i>UserSettings - User settings and MFA</li>
+                      <li><i class="fas fa-check text-success me-2"></i>Theme System - Comprehensive SCSS theming</li>
                     </ul>
                   </div>
                   <div class="col-md-6">
-                    <h6>Features Available:</h6>
+                    <h6>New Features:</h6>
                     <ul class="list-unstyled">
-                      <li><i class="fas fa-check text-success me-2"></i>Multi-tenant support</li>
-                      <li><i class="fas fa-check text-success me-2"></i>MFA authentication</li>
-                      <li><i class="fas fa-check text-success me-2"></i>User management</li>
-                      <li><i class="fas fa-check text-success me-2"></i>RBAC system</li>
-                      <li><i class="fas fa-check text-success me-2"></i>Blacklist management</li>
-                      <li><i class="fas fa-check text-success me-2"></i>Core data management</li>
+                      <li><i class="fas fa-check text-success me-2"></i>Dependency injection system</li>
+                      <li><i class="fas fa-check text-success me-2"></i>Complete visual consistency</li>
+                      <li><i class="fas fa-check text-success me-2"></i>Legacy design system</li>
+                      <li><i class="fas fa-check text-success me-2"></i>Theme-aware components</li>
+                      <li><i class="fas fa-check text-success me-2"></i>Context-aware styling</li>
+                      <li><i class="fas fa-check text-success me-2"></i>Seamless submodule integration</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Theme Information -->
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="card-title mb-0">
+                  <i class="fas fa-palette me-2"></i>
+                  Theme System Details
+                </h5>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <h6>Color Scheme:</h6>
+                    <ul class="list-unstyled">
+                      <li><i class="fas fa-circle text-primary me-2"></i>Primary: #002e6d (Dark Blue)</li>
+                      <li><i class="fas fa-circle text-danger me-2"></i>Secondary: #b8252b (Red)</li>
+                      <li><i class="fas fa-circle text-info me-2"></i>Tertiary: #66b3ff (Light Blue)</li>
+                      <li><i class="fas fa-circle text-light me-2"></i>Light: #f4f8fa (Light Gray)</li>
+                      <li><i class="fas fa-circle text-secondary me-2"></i>Grey: #e9f1f5 (Medium Gray)</li>
+                    </ul>
+                  </div>
+                  <div class="col-md-6">
+                    <h6>Design Elements:</h6>
+                    <ul class="list-unstyled">
+                      <li><i class="fas fa-check text-success me-2"></i>Legacy typography (Noto Sans)</li>
+                      <li><i class="fas fa-check text-success me-2"></i>Consistent spacing and layout</li>
+                      <li><i class="fas fa-check text-success me-2"></i>Component-specific styling</li>
+                      <li><i class="fas fa-check text-success me-2"></i>Responsive design</li>
+                      <li><i class="fas fa-check text-success me-2"></i>Accessibility compliance</li>
                     </ul>
                   </div>
                 </div>

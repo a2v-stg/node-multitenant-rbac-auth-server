@@ -1,6 +1,6 @@
 # Sample App - Admin UI Integration Demo
 
-This sample-app demonstrates how to integrate and reuse the admin-ui submodule with minimal configuration while maintaining the exact same look, feel, and functionality.
+This sample-app demonstrates how to integrate and reuse the admin-ui submodule with minimal configuration while maintaining the exact same look, feel, and functionality. **The app now features a comprehensive dependency injection and theming system that ensures complete visual consistency.**
 
 ## New Project Structure
 
@@ -12,6 +12,10 @@ admin-ui/
 ├── sample-app/                   # Sample application
 │   ├── client/                   # Sample app client
 │   │   ├── src/                  # Sample app client source
+│   │   │   ├── components/       # Sample app components
+│   │   │   ├── assets/           # Theme and styling assets
+│   │   │   │   └── scss/         # SCSS theme system
+│   │   │   └── views/            # Sample app views
 │   │   ├── package.json          # Client dependencies
 │   │   └── vite.config.js        # Vite configuration
 │   ├── server/                   # Sample app server
@@ -27,6 +31,8 @@ admin-ui/
 
 The sample-app showcases the following key capabilities:
 
+- **Complete Visual Consistency**: Comprehensive theming system with legacy design (Primary: #002e6d, Secondary: #b8252b)
+- **Dependency Injection System**: Advanced component injection that ensures even submodule components use the correct theme
 - **Identical UI/UX**: Uses the exact same components, layouts, and styling as the submodule
 - **Full Functionality**: All features from the submodule are available (MFA, tenant management, user management, etc.)
 - **Easy Customization**: Modular architecture allows for easy customization and extension
@@ -44,10 +50,119 @@ The sample-app showcases the following key capabilities:
 - ✅ Organization MFA configuration
 
 ### Sample App Specific Features
+- ✅ **Dependency Injection System**: Component provider pattern for theme consistency
+- ✅ **Comprehensive Theming**: Legacy design system with SCSS-based styling
+- ✅ **Theme-Aware Components**: Components automatically adapt to injected theme
+- ✅ **Visual Consistency**: Complete look and feel matching across all components
 - ✅ Demo page showcasing integration
 - ✅ Technical documentation
 - ✅ Navigation examples
 - ✅ Component usage examples
+
+## Dependency Injection & Theming System
+
+### Overview
+
+The sample-app implements a sophisticated dependency injection and theming system that ensures complete visual consistency across different implementations. This system allows the sample-app to provide its own components and styling to child components, even when they're from the admin submodule.
+
+### Key Components
+
+#### 1. ComponentProvider
+- **Purpose**: Provides sample-app components and theme to child components
+- **Location**: `sample-app/client/src/components/ComponentProvider.vue`
+- **Features**: 
+  - Wraps entire application with `sample-app-theme` class
+  - Provides sample-app components (AppSidebar, AppHeader, AppLayout)
+  - Provides theme information and styling context
+  - Sets `isSampleApp: true` flag for context awareness
+
+#### 2. Theme System
+- **Purpose**: Comprehensive SCSS-based theming system
+- **Location**: `sample-app/client/src/assets/scss/sample-app-theme.scss`
+- **Features**:
+  - Legacy color scheme (Primary: #002e6d, Secondary: #b8252b)
+  - Component-specific styling
+  - Responsive design
+  - Accessibility compliance
+
+#### 3. Theme-Aware Components
+- **Purpose**: Components that automatically adapt to injected theme
+- **Examples**: AppLayout, AppSidebar, AppHeader
+- **Features**: 
+  - Dynamic component selection based on context
+  - Fallback to admin components when needed
+  - Consistent styling across all implementations
+
+### Color Scheme
+
+The sample-app uses a comprehensive color scheme based on the legacy design:
+
+- **Primary**: #002e6d (Dark Blue) - Main brand color
+- **Secondary**: #b8252b (Red) - Accent and active states
+- **Tertiary**: #66b3ff (Light Blue) - Hover and interactive elements
+- **Light**: #f4f8fa (Light Gray) - Backgrounds and subtle elements
+- **Grey**: #e9f1f5 (Medium Gray) - Borders and dividers
+- **Background**: #e2eaef (Light Blue-Gray) - Main application background
+
+### Implementation Details
+
+#### Component Provider Setup
+```javascript
+// ComponentProvider.vue
+export default {
+  name: 'ComponentProvider',
+  provide() {
+    return {
+      sampleAppSidebar: AppSidebar,
+      sampleAppHeader: AppHeader,
+      sampleAppLayout: AppLayout,
+      sampleAppTheme: {
+        primary: '#002e6d',
+        secondary: '#b8252b',
+        tertiary: '#66b3ff',
+        light: '#f4f8fa',
+        grey: '#e9f1f5'
+      },
+      isSampleApp: true
+    }
+  }
+}
+```
+
+#### Theme-Aware Components
+```javascript
+// AppLayout.vue
+export default {
+  inject: {
+    sampleAppSidebar: { default: null },
+    sampleAppHeader: { default: null },
+    isSampleApp: { default: false },
+    sampleAppTheme: { default: null }
+  },
+  computed: {
+    sidebarComponent() {
+      return this.isSampleApp && this.sampleAppSidebar ? this.sampleAppSidebar : AppSidebar
+    }
+  }
+}
+```
+
+#### SCSS Theming
+```scss
+// sample-app-theme.scss
+.sample-app-theme {
+  font-family: 'Noto Sans', Avenir, Helvetica, Arial, sans-serif;
+  color: $primary-font-color;
+  background-color: #e2eaef;
+
+  .app-sidebar {
+    background: $primary !important;
+    .nav-link.active {
+      background: $secondary !important;
+    }
+  }
+}
+```
 
 ## Getting Started
 
