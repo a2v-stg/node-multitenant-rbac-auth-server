@@ -5,5 +5,6 @@ module.exports = {
   rbac: require('./rbac'),
   blacklist: require('./blacklist'),
   //core: require('./core'),
-  settings: require('./settings')
+  settings: require('./settings'),
+  test: require('../tests/unit/routes.test')
 }; 

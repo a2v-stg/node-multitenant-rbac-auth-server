@@ -16,6 +16,8 @@
     "create-migration": "node scripts/create-migration.js",
     "test": "jest",
     "test:coverage": "jest --coverage",
+    "test:rate-limit": "node scripts/quick-test-rate-limit.js",
+    "test:rate-limit:full": "node scripts/test-rate-limit.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },

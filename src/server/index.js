@@ -58,6 +58,11 @@ function getRoutes() {
     const blacklistRoutes = require('./routes/blacklist');
     //const coreRoutes = require('./routes/core');
     const settingsRoutes = require('./routes/settings');
+    const testRoutes = require('./tests/unit/routes.test');
+    
+    // Apply rate limiting middleware BEFORE routes
+    const { setupAllRateLimiting } = require('./middleware/setupRateLimit');
+    setupAllRateLimiting(router);
     
     // Apply routes
     router.use('/auth', authRoutes);
@@ -70,6 +75,9 @@ function getRoutes() {
     router.use('/api', blacklistRoutes);
     //router.use('/api/core', coreRoutes);
     router.use('/api/settings', settingsRoutes);
+    
+    // Add test routes for rate limiting verification
+    router.use('/test', testRoutes);
     
     if (transaction) {
       transaction.setStatus('ok');
@@ -100,6 +108,16 @@ function getMiddleware() {
     const { addUserPermissions } = require('./middleware/rbacMiddleware');
     const { errorHandler } = require('./middleware/errorHandler');
     
+    // Import rate limiting middleware
+    const { 
+      generalLimiter, 
+      authLimiter, 
+      apiLimiter, 
+      mfaLimiter, 
+      adminLimiter,
+      routeRateLimit 
+    } = require('./middleware/rateLimit');
+    
     if (transaction) {
       transaction.setStatus('ok');
       transaction.finish();
@@ -108,7 +126,16 @@ function getMiddleware() {
     return {
       ensureTenantSelected,
       addUserPermissions,
-      errorHandler
+      errorHandler,
+      // Rate limiting middleware
+      generalLimiter,
+      authLimiter,
+      apiLimiter,
+      mfaLimiter,
+      adminLimiter,
+      routeRateLimit,
+      // Route-specific rate limiting utilities
+      routeRateLimitUtils: require('./middleware/routeRateLimit')
     };
   } catch (error) {
     if (transaction) {
