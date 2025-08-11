@@ -65,7 +65,12 @@
                 >
                   <i class="fas fa-cog"></i>
                 </button>
-                <ul class="dropdown-menu" :class="{ show: showUserDropdown }">
+                <ul class="dropdown-menu dropdown-menu-end" :class="{ show: showUserDropdown }">
+                  <li>
+                    <a class="dropdown-item" href="#" @click.prevent="goToMfaSettings">
+                      <i class="fas fa-shield-alt me-2"></i>MFA Settings
+                    </a>
+                  </li>
                   <li>
                     <a class="dropdown-item" href="#" @click.prevent="logout"
                       >Logout</a
@@ -194,6 +199,11 @@
         window.location.href = '/auth/logout'
       }
 
+      const goToMfaSettings = () => {
+        console.log('Navigating to MFA Settings...')
+        router.push('/mfa-settings')
+      }
+
       onMounted(() => {
         loadUserData()
         loadAvailableTenants()
@@ -227,6 +237,7 @@
         toggleUserDropdown,
         switchTenant,
         logout,
+        goToMfaSettings,
       }
     },
   }
@@ -269,6 +280,50 @@
 
   .dropdown-menu.show {
     display: block !important;
+  }
+
+  .dropdown-menu-end {
+    right: 0;
+    left: auto;
+  }
+
+  .user-info .dropdown {
+    position: relative;
+  }
+
+  .user-info .dropdown-menu {
+    min-width: 200px;
+    margin-top: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    z-index: 1050;
+    position: absolute;
+    top: 100%;
+    right: 0;
+  }
+
+  .user-info .dropdown-item {
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .user-info .dropdown-item:hover {
+    background-color: #f8f9fa;
+  }
+
+  .user-info .dropdown .btn-link {
+    color: #6c757d;
+    text-decoration: none;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    transition: color 0.15s ease-in-out;
+  }
+
+  .user-info .dropdown .btn-link:hover {
+    color: #007bff;
+    background-color: #f8f9fa;
   }
 
   .user-avatar {

@@ -156,10 +156,7 @@ function setupPassport(passportInstance = passport) {
         console.error('❌ Database not connected. Cannot deserialize user.');
         return done(new Error('Database connection not available'));
       }
-
-      console.log('🔍 Deserializing user with ID:', id);
       const user = await User.findById(id);
-      console.log('🔍 Deserialized user:', user?.email);
       done(null, user);
     } catch (err) {
       console.error('🔍 Deserialization error:', err);

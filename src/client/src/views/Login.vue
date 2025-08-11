@@ -226,7 +226,7 @@
         sessionStorage.removeItem('roles')
 
         // Test API proxy
-        testApiProxy()
+        // testApiProxy()
 
         // Load OAuth configuration
         loadOAuthConfig()

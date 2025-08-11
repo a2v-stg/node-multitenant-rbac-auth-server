@@ -1,5 +1,5 @@
 <template>
-  <component :is="currentLayout" v-bind="$attrs" :class="{ 'sample-app-theme': isParentApp }">
+  <component :is="currentLayout" v-bind="$attrs" :class="{ 'parent-app-theme': isParentApp }">
     <slot />
   </component>
 </template>

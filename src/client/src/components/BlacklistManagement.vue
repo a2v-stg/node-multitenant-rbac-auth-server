@@ -7,6 +7,9 @@
           <h2 class="mb-3">
             <i class="fas fa-ban me-2"></i>Blacklist Management
           </h2>
+          <h6 class="mb-2">
+            ** This is a sample page with dummy data **
+          </h6>
         </div>
       </div>
 

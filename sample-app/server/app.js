@@ -13,6 +13,16 @@ const MongoStore = require('connect-mongo');
 // Load environment variables from the root directory FIRST
 dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
 
+// Initialize Sentry first
+const { initSentry, captureError, setUser, setTags } = require('./config/sentry');
+
+// Initialize Sentry
+initSentry({
+  dsn: process.env.SENTRY_DSN,
+  environment: process.env.NODE_ENV || 'development',
+  enableTracing: process.env.SENTRY_TRACING_ENABLED === 'true'
+});
+
 // Import admin-ui submodule
 const adminUI = require('@admin-ui/server');
 
@@ -42,6 +52,7 @@ try {
   console.log('✅ FDE engine models registered successfully');
 } catch (error) {
   console.warn('⚠️ FDE engine models not available:', error.message);
+  captureError(error, { context: 'fde-models.registration' });
 }
 
 const app = express();
@@ -67,6 +78,8 @@ app.set('views', path.join(__dirname, '../../src/server/views'));
 
 // Database connection with better error handling
 async function connectToDatabase() {
+  const transaction = require('./config/sentry').createTransaction('sample-app.database.connection', 'db');
+  
   try {
     // Set mongoose options to handle connection better
     mongoose.set('strictQuery', false);
@@ -95,10 +108,27 @@ async function connectToDatabase() {
     });
     
     console.log('✅ Connected to MongoDB');
+    
+    if (transaction) {
+      transaction.setStatus('ok');
+      transaction.finish();
+    }
+    
     return true;
   } catch (err) {
     console.error('❌ MongoDB connection error:', err);
     console.log('Server will continue without database connection');
+    
+    if (transaction) {
+      transaction.setStatus('internal_error');
+      transaction.finish();
+    }
+    
+    captureError(err, { 
+      context: 'sample-app.database.connection',
+      mongodbUri: process.env.MONGODB_URI ? 'configured' : 'not-configured'
+    });
+    
     return false;
   }
 }

@@ -14,6 +14,9 @@ import '@fortawesome/fontawesome-free/css/all.min.css'
 // Import Sample App Theme
 import './assets/scss/parent-app-theme.scss'
 
+// Import Sentry configuration
+import { initSentry, captureError, setUser, setTags, createTransaction } from './config/sentry'
+
 // Create router
 const router = createRouter({
   history: createWebHistory(),
@@ -23,22 +26,42 @@ const router = createRouter({
 // Configure axios - using relative URLs with Vite proxy
 axios.defaults.withCredentials = true
 
-// Add request interceptor for debugging
+// Add request interceptor for debugging and Sentry tracking
 axios.interceptors.request.use(
   config => {
     console.log('Axios request:', config.method?.toUpperCase(), config.url)
+    
+    // Add Sentry transaction for API requests
+    const transaction = createTransaction(`sample-app.api.${config.method?.toLowerCase() || 'request'}`, 'http', {
+      url: config.url,
+      method: config.method
+    });
+    
+    if (transaction) {
+      config.metadata = { transaction };
+    }
+    
     return config
   },
   error => {
     console.error('Axios request error:', error)
+    captureError(error, { context: 'sample-app.axios.request', url: error.config?.url });
     return Promise.reject(error)
   }
 )
 
-// Add response interceptor for debugging
+// Add response interceptor for debugging and Sentry tracking
 axios.interceptors.response.use(
   response => {
     console.log('Axios response:', response.status, response.config.url)
+    
+    // Finish Sentry transaction
+    if (response.config.metadata?.transaction) {
+      const transaction = response.config.metadata.transaction;
+      transaction.setStatus(response.status < 400 ? 'ok' : 'internal_error');
+      transaction.finish();
+    }
+    
     return response
   },
   error => {
@@ -47,55 +70,126 @@ axios.interceptors.response.use(
       error.response?.status,
       error.config?.url
     )
+    
+    // Finish Sentry transaction with error
+    if (error.config?.metadata?.transaction) {
+      const transaction = error.config.metadata.transaction;
+      transaction.setStatus('internal_error');
+      transaction.finish();
+    }
+    
+    captureError(error, { 
+      context: 'sample-app.axios.response', 
+      status: error.response?.status,
+      url: error.config?.url 
+    });
+    
     return Promise.reject(error)
   }
 )
 
-// Router guards
+// Router guards with Sentry tracking
 router.beforeEach(async (to, from, next) => {
-  // Check if route requires authentication
-  if (to.meta.requiresAuth) {
-    try {
-      // Check if user is authenticated by making a request to a protected endpoint
-      const response = await axios.get('/api/auth/me')
-      if (!response.data.success) {
+  // Create transaction for route navigation
+  const transaction = createTransaction(`sample-app.navigation.${to.name || to.path}`, 'navigation', {
+    from: from.path,
+    to: to.path
+  });
+  
+  try {
+    // Check if route requires authentication
+    if (to.meta.requiresAuth) {
+      try {
+        // Check if user is authenticated by making a request to a protected endpoint
+        const response = await axios.get('/api/auth/me')
+        if (!response.data.success) {
+          if (transaction) {
+            transaction.setStatus('unauthenticated');
+            transaction.finish();
+          }
+          return next('/login')
+        }
+
+        // Check if route requires admin permissions
+        if (to.meta.requiresAdmin) {
+          // Check if user has admin permissions
+          const permissionsResponse = await axios.get('/api/rbac/permissions')
+          if (!permissionsResponse.data.success) {
+            if (transaction) {
+              transaction.setStatus('unauthorized');
+              transaction.finish();
+            }
+            return next('/dashboard')
+          }
+
+          // Check if user has admin permissions
+          const userPermissions = response.data.user?.permissions || []
+          const hasAdminPermission = userPermissions.some(permission => 
+            permission === 'system:admin' || 
+            permission === 'roles:read' || 
+            permission === 'settings:read'
+          )
+
+          if (!hasAdminPermission) {
+            alert('Access denied. Admin permissions required.')
+            if (transaction) {
+              transaction.setStatus('unauthorized');
+              transaction.finish();
+            }
+            return next('/dashboard')
+          }
+        }
+
+        // Set user context for Sentry
+        if (response.data.user) {
+          setUser(response.data.user);
+        }
+        
+        if (transaction) {
+          transaction.setStatus('ok');
+          transaction.finish();
+        }
+        
+        next()
+      } catch (error) {
+        console.error('Authentication check failed:', error)
+        captureError(error, { context: 'sample-app.router.auth-check', route: to.path });
+        
+        if (transaction) {
+          transaction.setStatus('internal_error');
+          transaction.finish();
+        }
+        
         return next('/login')
       }
-
-      // Check if route requires admin permissions
-      if (to.meta.requiresAdmin) {
-        // Check if user has admin permissions
-        const permissionsResponse = await axios.get('/api/rbac/permissions')
-        if (!permissionsResponse.data.success) {
-          return next('/dashboard')
-        }
-
-        // Check if user has admin permissions
-        const userPermissions = response.data.user?.permissions || []
-        const hasAdminPermission = userPermissions.some(permission => 
-          permission === 'system:admin' || 
-          permission === 'roles:read' || 
-          permission === 'settings:read'
-        )
-
-        if (!hasAdminPermission) {
-          alert('Access denied. Admin permissions required.')
-          return next('/dashboard')
-        }
+    } else {
+      if (transaction) {
+        transaction.setStatus('ok');
+        transaction.finish();
       }
-
       next()
-    } catch (error) {
-      console.error('Authentication check failed:', error)
-      return next('/login')
     }
-  } else {
+  } catch (error) {
+    captureError(error, { context: 'sample-app.router.beforeEach', route: to.path });
+    
+    if (transaction) {
+      transaction.setStatus('internal_error');
+      transaction.finish();
+    }
+    
     next()
   }
 })
 
 // Create Vue app
 const app = createApp(App)
+
+// Initialize Sentry
+initSentry(app, {
+  dsn: import.meta.env.VITE_SENTRY_DSN,
+  environment: import.meta.env.MODE || 'development',
+  enableTracing: import.meta.env.VITE_SENTRY_TRACING_ENABLED === 'true'
+});
 
 // Global properties
 app.config.globalProperties.$http = axios

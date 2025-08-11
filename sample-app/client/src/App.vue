@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="sample-app-theme">
+  <div id="app" class="parent-app-theme">
     <ComponentProvider>
       <router-view />
     </ComponentProvider>
@@ -8,7 +8,7 @@
 
 <script>
   import ComponentProvider from './components/ComponentProvider.vue'
-  import './assets/scss/sample-app-theme.scss'
+  import './assets/scss/parent-app-theme.scss'
 
   export default {
     name: 'App',

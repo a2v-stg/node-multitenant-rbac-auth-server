@@ -1,5 +1,5 @@
 <template>
-  <div class="app-layout" :class="{ 'sample-app-theme': isParentApp }">
+  <div class="app-layout" :class="{ 'parent-app-theme': isParentApp }">
     <!-- Sidebar -->
     <component :is="sidebarComponent" />
 
@@ -51,7 +51,7 @@
     min-height: 100vh;
   }
 
-  .app-layout.sample-app-theme {
+  .app-layout.parent-app-theme {
     background-color: #e2eaef;
   }
 
@@ -62,7 +62,7 @@
     flex-direction: column;
   }
 
-  .app-layout.sample-app-theme .main-content {
+  .app-layout.parent-app-theme .main-content {
     background-color: #e2eaef;
   }
 
@@ -73,7 +73,7 @@
     min-height: calc(100vh - 80px);
   }
 
-  .app-layout.sample-app-theme .page-content {
+  .app-layout.parent-app-theme .page-content {
     background-color: #e2eaef;
   }
 </style>

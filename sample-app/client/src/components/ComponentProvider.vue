@@ -1,5 +1,5 @@
 <template>
-  <div class="sample-app-theme">
+  <div class="parent-app-theme">
     <slot />
   </div>
 </template>
@@ -8,7 +8,7 @@
 import AppSidebar from './AppSidebar.vue'
 import AppHeader from './AppHeader.vue'
 import AppLayout from './AppLayout.vue'
-import '../assets/scss/sample-app-theme.scss'
+import '../assets/scss/parent-app-theme.scss'
 
 export default {
   name: 'ComponentProvider',
