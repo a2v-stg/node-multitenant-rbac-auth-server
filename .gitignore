@@ -3,3 +3,4 @@ coverage
 legacy
 .env
 logs
+.DS_Store

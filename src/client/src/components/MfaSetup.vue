@@ -5,8 +5,8 @@
         <div class="card">
           <div class="card-header text-center">
             <img
-              src="/sba-logo.png"
-              alt="SBA Logo"
+              src="/static/allocore-logo.png"
+              alt="Tenant Logo"
               class="mb-3"
               style="height: 40px"
             />

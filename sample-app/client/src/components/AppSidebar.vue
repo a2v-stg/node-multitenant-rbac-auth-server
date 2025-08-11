@@ -2,6 +2,12 @@
   <aside class="app-sidebar">
     <nav class="sidebar-nav">
       <ul class="nav flex-column">
+        <li>
+       <div class="sidebar-logo"><img
+              src="/static/allocore-logo.png"
+              alt="Tenant Logo"
+              style="height: 40px"
+      /></div></li>
         <li class="nav-item">
           <router-link to="/sample" class="nav-link" active-class="active">
             <i class="fas fa-laptop-code me-2"></i>
@@ -65,6 +71,12 @@
     top: 0;
     z-index: 1000;
     border-right: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .sidebar-logo{
+    background:white;
+    top: 20px;
+    bottom: 10px
   }
 
   .sidebar-nav {
