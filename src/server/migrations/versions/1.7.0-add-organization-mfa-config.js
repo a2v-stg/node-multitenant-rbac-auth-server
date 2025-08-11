@@ -4,7 +4,7 @@ module.exports = {
   version: '1.7.0',
   name: 'add-organization-mfa-config',
   description: 'Add organization MFA configuration fields to tenants',
-  
+
   up: async (queryInterface, Sequelize) => {
     const mongoose = require('mongoose');
     const Tenant = require('../../models/Tenant');
@@ -18,8 +18,8 @@ module.exports = {
             organizationMfaEnabled: false,
             organizationMfaRequiredForLocalUsers: false,
             organizationMfaMethods: ['totp'],
-            organizationMfaGracePeriod: 0,
-          },
+            organizationMfaGracePeriod: 0
+          }
         }
       );
 
@@ -43,8 +43,8 @@ module.exports = {
             organizationMfaEnabled: '',
             organizationMfaRequiredForLocalUsers: '',
             organizationMfaMethods: '',
-            organizationMfaGracePeriod: '',
-          },
+            organizationMfaGracePeriod: ''
+          }
         }
       );
 
@@ -53,5 +53,5 @@ module.exports = {
       console.error('❌ Error removing organization MFA fields from tenants:', error);
       throw error;
     }
-  },
+  }
 };

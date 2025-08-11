@@ -11,13 +11,13 @@ async function testSingleTenantFlow() {
       'http://localhost:3000/auth/login',
       {
         username: 'test@example.com',
-        password: 'password123',
+        password: 'password123'
       },
       {
         maxRedirects: 0,
         validateStatus(status) {
           return status >= 200 && status < 400; // Accept redirects
-        },
+        }
       }
     );
 
@@ -27,7 +27,7 @@ async function testSingleTenantFlow() {
     // 2. Create session for subsequent requests
     const session = axios.create({
       withCredentials: true,
-      baseURL: 'http://localhost:3000',
+      baseURL: 'http://localhost:3000'
     });
 
     // 3. Check current user status
@@ -65,13 +65,13 @@ async function testSingleTenantFlow() {
       const selectResponse = await session.post(
         '/auth/select-tenant',
         {
-          tenantId: 'default',
+          tenantId: 'default'
         },
         {
           maxRedirects: 0,
           validateStatus(status) {
             return status >= 200 && status < 400; // Accept redirects
-          },
+          }
         }
       );
 

@@ -18,7 +18,7 @@ function setupPassport(passportInstance = passport) {
         const context = getContext();
         const mongoose = context.getMongoose();
         const User = context.getModel('User');
-        
+
         // Check if mongoose is connected
         if (mongoose.connection.readyState !== 1) {
           console.error('❌ Database not connected. Cannot authenticate user.');
@@ -33,7 +33,7 @@ function setupPassport(passportInstance = passport) {
         // Check if user has a password (not OAuth-only user)
         if (!user.password) {
           return done(null, false, {
-            message: 'This account requires OAuth login.',
+            message: 'This account requires OAuth login.'
           });
         }
 
@@ -65,14 +65,14 @@ function setupPassport(passportInstance = passport) {
             tokenURL: process.env.OAUTH_TOKEN_URL,
             clientID: process.env.OAUTH_CLIENT_ID,
             clientSecret: process.env.OAUTH_CLIENT_SECRET,
-            callbackURL: process.env.OAUTH_CALLBACK_URL,
+            callbackURL: process.env.OAUTH_CALLBACK_URL
           },
           async (accessToken, refreshToken, profile, done) => {
             try {
               const context = getContext();
               const mongoose = context.getMongoose();
               const User = context.getModel('User');
-              
+
               // Check if mongoose is connected
               if (mongoose.connection.readyState !== 1) {
                 console.error('❌ Database not connected. Cannot authenticate user.');
@@ -81,7 +81,7 @@ function setupPassport(passportInstance = passport) {
 
               // Call the userinfo endpoint to get detailed user information
               const res = await fetch(process.env.OAUTH_USERINFO_URL, {
-                headers: { Authorization: `Bearer ${accessToken}` },
+                headers: { Authorization: `Bearer ${accessToken}` }
               });
 
               if (!res.ok) {
@@ -99,7 +99,7 @@ function setupPassport(passportInstance = passport) {
 
               // Try to find existing user by email or OAuth ID
               let user = await User.findOne({
-                $or: [{ email }, { oauthId: profileData.sub || profileData.id }],
+                $or: [{ email }, { oauthId: profileData.sub || profileData.id }]
               });
 
               if (!user) {
@@ -112,7 +112,7 @@ function setupPassport(passportInstance = passport) {
                   picture: profileData.picture || profileData.avatar_url,
                   oauthProvider: 'oauth2',
                   oauthId: profileData.sub || profileData.id,
-                  metadata: profileData,
+                  metadata: profileData
                 });
                 await user.save();
                 console.log('Created new user from OAuth:', user.email);
@@ -150,7 +150,7 @@ function setupPassport(passportInstance = passport) {
       const context = getContext();
       const mongoose = context.getMongoose();
       const User = context.getModel('User');
-      
+
       // Check if mongoose is connected
       if (mongoose.connection.readyState !== 1) {
         console.error('❌ Database not connected. Cannot deserialize user.');

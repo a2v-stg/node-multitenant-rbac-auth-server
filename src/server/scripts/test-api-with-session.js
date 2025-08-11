@@ -10,7 +10,7 @@ mongoose.connect(
   process.env.MONGODB_URI || 'mongodb://localhost:27017/fde_doc_db',
   {
     useNewUrlParser: true,
-    useUnifiedTopology: true,
+    useUnifiedTopology: true
   }
 );
 
@@ -50,7 +50,7 @@ async function testAPIWithSession() {
       userTenants.map(async ut => {
         const userRoles = await UserRole.find({
           user: ut.user._id,
-          tenant: tenant._id,
+          tenant: tenant._id
         }).populate('role');
 
         console.log(`   - ${ut.user.email}: ${userRoles.length} roles`);
@@ -63,7 +63,7 @@ async function testAPIWithSession() {
           lastLogin: ut.user.lastLogin,
           oauthProvider: ut.user.oauthProvider,
           roles: userRoles.map(ur => ur.role),
-          createdAt: ut.user.createdAt,
+          createdAt: ut.user.createdAt
         };
       })
     );

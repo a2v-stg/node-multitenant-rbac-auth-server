@@ -4,7 +4,7 @@ module.exports = {
   version: '1.8.0',
   name: 'create-organization-model',
   description: 'Create Organization model and migrate organization-level MFA configuration',
-  
+
   up: async (queryInterface, Sequelize) => {
     const mongoose = require('mongoose');
     const Tenant = require('../../models/Tenant');
@@ -18,8 +18,8 @@ module.exports = {
             organizationMfaEnabled: '',
             organizationMfaRequiredForLocalUsers: '',
             organizationMfaMethods: '',
-            organizationMfaGracePeriod: '',
-          },
+            organizationMfaGracePeriod: ''
+          }
         }
       );
 
@@ -44,8 +44,8 @@ module.exports = {
             organizationMfaEnabled: false,
             organizationMfaRequiredForLocalUsers: false,
             organizationMfaMethods: ['totp'],
-            organizationMfaGracePeriod: 0,
-          },
+            organizationMfaGracePeriod: 0
+          }
         }
       );
 
@@ -55,5 +55,5 @@ module.exports = {
       console.error('❌ Error rolling back organization model migration:', error);
       throw error;
     }
-  },
-}; 
+  }
+};

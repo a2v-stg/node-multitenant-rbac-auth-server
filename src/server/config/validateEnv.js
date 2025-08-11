@@ -6,7 +6,7 @@ const requiredEnvVars = [
   'OAUTH_AUTH_URL',
   'OAUTH_TOKEN_URL',
   'OAUTH_CALLBACK_URL',
-  'OAUTH_USERINFO_URL',
+  'OAUTH_USERINFO_URL'
 ];
 
 function validateEnvironment() {

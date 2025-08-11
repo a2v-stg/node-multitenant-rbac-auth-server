@@ -4,7 +4,7 @@ let context;
 function createContext({ config, logger, mongoose, models = {} }) {
   // Load models with the specific mongoose instance
   let contextModels = models;
-  
+
   if (mongoose && mongoose.connection.readyState === 1) {
     try {
       const { getModelsWithConnection } = require('./models');
@@ -13,7 +13,7 @@ function createContext({ config, logger, mongoose, models = {} }) {
       console.warn('⚠️ Could not load models with connection:', error.message);
     }
   }
-  
+
   return {
     config,
     logger,
@@ -24,7 +24,7 @@ function createContext({ config, logger, mongoose, models = {} }) {
       if (contextModels[name]) {
         return contextModels[name];
       }
-      
+
       // Otherwise, try to load from models directory with the correct mongoose instance
       try {
         if (mongoose && mongoose.connection.readyState === 1) {
@@ -67,5 +67,5 @@ function getContext() {
 module.exports = {
   createContext,
   initContext,
-  getContext,
-}; 
+  getContext
+};

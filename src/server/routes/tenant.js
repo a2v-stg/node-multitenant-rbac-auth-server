@@ -11,11 +11,11 @@ router.get(
     try {
       const context = getContext();
       const Tenant = context.getModel('Tenant');
-      
+
       // Check if user is authenticated and has default tenant access
       if (!req.isAuthenticated()) {
         return res.status(401).json({
-          error: 'Access denied. Only default tenant users can manage tenants.',
+          error: 'Access denied. Only default tenant users can manage tenants.'
         });
       }
 
@@ -23,7 +23,7 @@ router.get(
 
       res.json({
         success: true,
-        data: tenants,
+        data: tenants
       });
     } catch (error) {
       console.error('Error fetching tenants:', error);
@@ -39,18 +39,18 @@ router.get(
     try {
       const context = getContext();
       const Tenant = context.getModel('Tenant');
-      
+
       // Check if user is authenticated
       if (!req.isAuthenticated()) {
         return res.status(401).json({
-          error: 'Access denied. Only default tenant users can view available tenants.',
+          error: 'Access denied. Only default tenant users can view available tenants.'
         });
       }
 
       // Only default tenant users can view available tenants
       if (req.session.tenantId !== 'default') {
         return res.status(403).json({
-          error: 'Access denied. Only default tenant users can view available tenants.',
+          error: 'Access denied. Only default tenant users can view available tenants.'
         });
       }
 
@@ -64,12 +64,12 @@ router.get(
         envName: tenant.envName,
         mfaEnabled: tenant.mfaEnabled,
         mfaRequiredForLocalUsers: tenant.mfaRequiredForLocalUsers,
-        mfaMethods: tenant.mfaMethods,
+        mfaMethods: tenant.mfaMethods
       }));
 
       res.json({
         success: true,
-        data: tenantList,
+        data: tenantList
       });
     } catch (error) {
       console.error('Error fetching available tenants:', error);
@@ -85,7 +85,7 @@ router.get(
     try {
       const context = getContext();
       const Tenant = context.getModel('Tenant');
-      
+
       const tenant = await Tenant.findById(req.params.id);
       if (!tenant) {
         return res.status(404).json({ error: 'Tenant not found' });
@@ -93,7 +93,7 @@ router.get(
 
       res.json({
         success: true,
-        data: tenant,
+        data: tenant
       });
     } catch (error) {
       console.error('Error fetching tenant:', error);
@@ -109,18 +109,18 @@ router.post(
     try {
       const context = getContext();
       const Tenant = context.getModel('Tenant');
-      
+
       // Check if user is authenticated and has default tenant access
       if (!req.isAuthenticated()) {
         return res.status(401).json({
-          error: 'Access denied. Only default tenant users can create tenants.',
+          error: 'Access denied. Only default tenant users can create tenants.'
         });
       }
 
       // Only default tenant users can create tenants
       if (req.session.tenantId !== 'default') {
         return res.status(403).json({
-          error: 'Access denied. Only default tenant users can create tenants.',
+          error: 'Access denied. Only default tenant users can create tenants.'
         });
       }
 
@@ -141,13 +141,13 @@ router.post(
         selectedEvents,
         documentCallbackUrl,
         topFaceSimilarity,
-        topImageSimilarity,
+        topImageSimilarity
       } = req.body;
 
       // Validate required fields
       if (!tenantName || !tenantId || !envName) {
         return res.status(400).json({
-          error: 'tenantName, tenantId, and envName are required',
+          error: 'tenantName, tenantId, and envName are required'
         });
       }
 
@@ -155,7 +155,7 @@ router.post(
       const existingTenant = await Tenant.findOne({ tenantId });
       if (existingTenant) {
         return res.status(400).json({
-          error: 'Tenant with this tenantId already exists',
+          error: 'Tenant with this tenantId already exists'
         });
       }
 
@@ -176,14 +176,14 @@ router.post(
         selectedEvents,
         documentCallbackUrl,
         topFaceSimilarity,
-        topImageSimilarity,
+        topImageSimilarity
       });
 
       await tenant.save();
 
       res.status(201).json({
         success: true,
-        data: tenant,
+        data: tenant
       });
     } catch (error) {
       console.error('Error creating tenant:', error);
@@ -199,18 +199,18 @@ router.put(
     try {
       const context = getContext();
       const Tenant = context.getModel('Tenant');
-      
+
       // Check if user is authenticated and has default tenant access
       if (!req.isAuthenticated()) {
         return res.status(401).json({
-          error: 'Access denied. Only default tenant users can update tenants.',
+          error: 'Access denied. Only default tenant users can update tenants.'
         });
       }
 
       // Only default tenant users can update tenants
       if (req.session.tenantId !== 'default') {
         return res.status(403).json({
-          error: 'Access denied. Only default tenant users can update tenants.',
+          error: 'Access denied. Only default tenant users can update tenants.'
         });
       }
 
@@ -236,7 +236,7 @@ router.put(
         'selectedEvents',
         'documentCallbackUrl',
         'topFaceSimilarity',
-        'topImageSimilarity',
+        'topImageSimilarity'
       ];
 
       updateFields.forEach(field => {
@@ -249,7 +249,7 @@ router.put(
 
       res.json({
         success: true,
-        data: tenant,
+        data: tenant
       });
     } catch (error) {
       console.error('Error updating tenant:', error);
@@ -265,18 +265,18 @@ router.delete(
     try {
       const context = getContext();
       const Tenant = context.getModel('Tenant');
-      
+
       // Check if user is authenticated and has default tenant access
       if (!req.isAuthenticated()) {
         return res.status(401).json({
-          error: 'Access denied. Only default tenant users can delete tenants.',
+          error: 'Access denied. Only default tenant users can delete tenants.'
         });
       }
 
       // Only default tenant users can delete tenants
       if (req.session.tenantId !== 'default') {
         return res.status(403).json({
-          error: 'Access denied. Only default tenant users can delete tenants.',
+          error: 'Access denied. Only default tenant users can delete tenants.'
         });
       }
 
@@ -288,7 +288,7 @@ router.delete(
       // Don't allow deletion of default tenant
       if (tenant.tenantId === 'default') {
         return res.status(400).json({
-          error: 'Cannot delete default tenant',
+          error: 'Cannot delete default tenant'
         });
       }
 
@@ -296,7 +296,7 @@ router.delete(
 
       res.json({
         success: true,
-        message: 'Tenant deleted successfully',
+        message: 'Tenant deleted successfully'
       });
     } catch (error) {
       console.error('Error deleting tenant:', error);
@@ -312,11 +312,11 @@ router.get(
     try {
       const context = getContext();
       const Tenant = context.getModel('Tenant');
-      
+
       // Check if user is authenticated
       if (!req.isAuthenticated()) {
         return res.status(401).json({
-          error: 'Not authenticated',
+          error: 'Not authenticated'
         });
       }
 
@@ -324,7 +324,7 @@ router.get(
       const tenantId = req.session.tenantId;
       if (!tenantId) {
         return res.status(404).json({
-          error: 'No tenant selected',
+          error: 'No tenant selected'
         });
       }
 
@@ -332,13 +332,13 @@ router.get(
       const tenant = await Tenant.findOne({ tenantId });
       if (!tenant) {
         return res.status(404).json({
-          error: 'Tenant not found',
+          error: 'Tenant not found'
         });
       }
 
       res.json({
         success: true,
-        data: tenant,
+        data: tenant
       });
     } catch (error) {
       console.error('Error fetching current tenant:', error);
@@ -354,9 +354,9 @@ router.get(
     try {
       const context = getContext();
       const Tenant = context.getModel('Tenant');
-      
+
       const tenant = await Tenant.findOne({
-        tenantId: req.params.tenantId,
+        tenantId: req.params.tenantId
       });
 
       if (!tenant) {
@@ -365,7 +365,7 @@ router.get(
 
       res.json({
         success: true,
-        data: tenant,
+        data: tenant
       });
     } catch (error) {
       console.error('Error fetching tenant:', error);

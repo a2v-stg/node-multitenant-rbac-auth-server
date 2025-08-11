@@ -33,7 +33,7 @@ const PERMISSIONS = {
 
   // System administration
   'system:admin': 'System administration',
-  'system:audit': 'View audit logs',
+  'system:audit': 'View audit logs'
 };
 
 // Predefined roles with their permissions
@@ -42,7 +42,7 @@ const PREDEFINED_ROLES = {
     name: 'Super Administrator',
     description: 'Full system access',
     permissions: Object.keys(PERMISSIONS),
-    isSystem: true,
+    isSystem: true
   },
   tenant_admin: {
     name: 'Tenant Administrator',
@@ -65,9 +65,9 @@ const PREDEFINED_ROLES = {
       'reports:create',
       'reports:export',
       'settings:read',
-      'settings:update',
+      'settings:update'
     ],
-    isSystem: true,
+    isSystem: true
   },
   manager: {
     name: 'Manager',
@@ -79,22 +79,22 @@ const PREDEFINED_ROLES = {
       'dashboard:read',
       'reports:read',
       'reports:create',
-      'settings:read',
+      'settings:read'
     ],
-    isSystem: true,
+    isSystem: true
   },
   user: {
     name: 'User',
     description: 'Basic user access',
     permissions: ['dashboard:read', 'reports:read'],
-    isSystem: true,
+    isSystem: true
   },
   viewer: {
     name: 'Viewer',
     description: 'Read-only access',
     permissions: ['dashboard:read', 'reports:read'],
-    isSystem: true,
-  },
+    isSystem: true
+  }
 };
 
 // Helper functions
@@ -123,15 +123,15 @@ const permissionHelpers = {
       }
       categories[category].push({
         key: permission,
-        description: PERMISSIONS[permission],
+        description: PERMISSIONS[permission]
       });
     });
     return categories;
-  },
+  }
 };
 
 module.exports = {
   PERMISSIONS,
   PREDEFINED_ROLES,
-  permissionHelpers,
+  permissionHelpers
 };

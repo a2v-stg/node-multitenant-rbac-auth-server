@@ -32,7 +32,7 @@ async function testAuthEndpoints() {
       const response = await axios.post(
         'http://localhost:3000/auth/switch-tenant',
         {
-          tenant: 'default',
+          tenant: 'default'
         }
       );
       console.log('   ✅ Switch tenant:', response.data);

@@ -21,7 +21,7 @@ class RBACService {
         UserRole: context.getModel('UserRole'),
         Role: context.getModel('Role'),
         User: context.getModel('User'),
-        Tenant: context.getModel('Tenant'),
+        Tenant: context.getModel('Tenant')
       };
     }
     return this.models;
@@ -34,7 +34,7 @@ class RBACService {
       const userRoles = await UserRole.find({
         user: userId,
         tenant: tenantId,
-        isActive: true,
+        isActive: true
       }).populate('role');
 
       for (const userRole of userRoles) {
@@ -60,7 +60,7 @@ class RBACService {
       const userRoles = await UserRole.find({
         user: userId,
         tenant: tenantId,
-        isActive: true,
+        isActive: true
       }).populate('role');
 
       const permissions = new Set();
@@ -89,7 +89,7 @@ class RBACService {
       const userRoles = await UserRole.find({
         user: userId,
         tenant: tenantId,
-        isActive: true,
+        isActive: true
       }).populate('role');
 
       return userRoles.filter(ur => ur.isValid()).map(ur => ur.role);
@@ -113,7 +113,7 @@ class RBACService {
       const existingAssignment = await UserRole.findOne({
         user: userId,
         tenant: tenantId,
-        role: roleId,
+        role: roleId
       });
 
       if (existingAssignment) {
@@ -128,7 +128,7 @@ class RBACService {
           user: userId,
           tenant: tenantId,
           role: roleId,
-          assignedBy,
+          assignedBy
         });
       }
     } catch (error) {
@@ -161,7 +161,7 @@ class RBACService {
       const { Role } = this._getModels();
       const role = new Role({
         ...roleData,
-        tenant: tenantId,
+        tenant: tenantId
       });
 
       return await role.save();
@@ -196,7 +196,7 @@ class RBACService {
           name: roleData.name,
           description: roleData.description,
           permissions: roleData.permissions,
-          isSystem: roleData.isSystem,
+          isSystem: roleData.isSystem
         });
         roles.push(role);
       }
@@ -228,7 +228,7 @@ class RBACService {
       const userRoles = await UserRole.find({
         tenant: tenantId,
         role: roleId,
-        isActive: true,
+        isActive: true
       }).populate('user');
 
       return userRoles.filter(ur => ur.isValid()).map(ur => ur.user);

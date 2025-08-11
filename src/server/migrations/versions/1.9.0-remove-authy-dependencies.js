@@ -15,8 +15,8 @@ module.exports = {
       {},
       {
         $unset: {
-          authyId: '',
-        },
+          authyId: ''
+        }
       }
     );
 
@@ -28,8 +28,8 @@ module.exports = {
       {
         $set: {
           mfaMethod: 'totp',
-          mfaSetupCompleted: false,
-        },
+          mfaSetupCompleted: false
+        }
       }
     );
 
@@ -46,11 +46,11 @@ module.exports = {
       {},
       {
         $set: {
-          authyId: null,
-        },
+          authyId: null
+        }
       }
     );
 
     console.log('Authy dependencies restored successfully');
-  },
-}; 
+  }
+};

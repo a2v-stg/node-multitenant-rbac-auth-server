@@ -5,39 +5,39 @@ const MigrationSchema = new mongoose.Schema(
     version: {
       type: String,
       required: true,
-      unique: true,
+      unique: true
     },
     name: {
       type: String,
-      required: true,
+      required: true
     },
     description: {
       type: String,
-      required: true,
+      required: true
     },
     appliedAt: {
       type: Date,
-      default: Date.now,
+      default: Date.now
     },
     executionTime: {
       type: Number, // in milliseconds
-      default: 0,
+      default: 0
     },
     status: {
       type: String,
       enum: ['pending', 'applied', 'failed', 'rolled_back'],
-      default: 'pending',
+      default: 'pending'
     },
     error: {
-      type: String,
+      type: String
     },
     metadata: {
       type: mongoose.Schema.Types.Mixed,
-      default: {},
-    },
+      default: {}
+    }
   },
   {
-    timestamps: true,
+    timestamps: true
   }
 );
 

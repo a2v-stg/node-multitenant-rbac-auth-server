@@ -7,4 +7,4 @@ module.exports = {
   //core: require('./core'),
   settings: require('./settings'),
   test: require('../tests/unit/routes.test')
-}; 
+};

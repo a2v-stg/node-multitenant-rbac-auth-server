@@ -3,58 +3,58 @@ const log4js = require('log4js');
 // Configure log4js
 log4js.configure({
   appenders: {
-    console: { 
+    console: {
       type: 'console',
       layout: {
         type: 'pattern',
         pattern: '%d{yyyy-MM-dd hh:mm:ss} [%p]: %m'
       }
     },
-    errorFile: { 
-      type: 'file', 
-      filename: 'logs/error.log', 
-      maxLogSize: 10485760, 
-      backups: 15, 
-      compress: true 
+    errorFile: {
+      type: 'file',
+      filename: 'logs/error.log',
+      maxLogSize: 10485760,
+      backups: 15,
+      compress: true
     },
-    combinedFile: { 
-      type: 'file', 
-      filename: 'logs/combined.log', 
-      maxLogSize: 10485760, 
-      backups: 15, 
-      compress: true 
+    combinedFile: {
+      type: 'file',
+      filename: 'logs/combined.log',
+      maxLogSize: 10485760,
+      backups: 15,
+      compress: true
     },
-    authFile: { 
-      type: 'file', 
-      filename: 'logs/auth.log', 
-      maxLogSize: 10485760, 
-      backups: 15, 
-      compress: true 
+    authFile: {
+      type: 'file',
+      filename: 'logs/auth.log',
+      maxLogSize: 10485760,
+      backups: 15,
+      compress: true
     },
-    mfaFile: { 
-      type: 'file', 
-      filename: 'logs/mfa.log', 
-      maxLogSize: 10485760, 
-      backups: 15, 
-      compress: true 
+    mfaFile: {
+      type: 'file',
+      filename: 'logs/mfa.log',
+      maxLogSize: 10485760,
+      backups: 15,
+      compress: true
     }
   },
   categories: {
-    default: { 
-      appenders: ['console', 'combinedFile'], 
-      level: process.env.LOG_LEVEL || 'info' 
+    default: {
+      appenders: ['console', 'combinedFile'],
+      level: process.env.LOG_LEVEL || 'info'
     },
-    error: { 
-      appenders: ['console', 'errorFile'], 
-      level: 'error' 
+    error: {
+      appenders: ['console', 'errorFile'],
+      level: 'error'
     },
-    auth: { 
-      appenders: ['console', 'authFile'], 
-      level: process.env.LOG_LEVEL || 'info' 
+    auth: {
+      appenders: ['console', 'authFile'],
+      level: process.env.LOG_LEVEL || 'info'
     },
-    mfa: { 
-      appenders: ['console', 'mfaFile'], 
-      level: process.env.LOG_LEVEL || 'info' 
+    mfa: {
+      appenders: ['console', 'mfaFile'],
+      level: process.env.LOG_LEVEL || 'info'
     }
   }
 });
@@ -95,5 +95,5 @@ module.exports = {
 
   // API logging
   api: (message, meta = {}) => mainLogger.info(`[API] ${formatMessage(message, meta)}`),
-  apiError: (message, meta = {}) => errorLogger.error(`[API] ${formatMessage(message, meta)}`),
+  apiError: (message, meta = {}) => errorLogger.error(`[API] ${formatMessage(message, meta)}`)
 };

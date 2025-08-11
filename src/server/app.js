@@ -7,5 +7,5 @@ module.exports = {
   initApp,
   getRoutes,
   getMiddleware,
-  getPassport,
+  getPassport
 };

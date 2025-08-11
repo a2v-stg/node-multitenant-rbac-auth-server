@@ -1,12 +1,12 @@
-const { 
-  generalLimiter, 
-  authLimiter, 
-  apiLimiter, 
-  uploadLimiter, 
-  mfaLimiter, 
-  adminLimiter, 
+const {
+  generalLimiter,
+  authLimiter,
+  apiLimiter,
+  uploadLimiter,
+  mfaLimiter,
+  adminLimiter,
   dynamicLimiter,
-  speedLimiter 
+  speedLimiter
 } = require('./rateLimit');
 
 // Route-specific rate limiting middleware
@@ -58,15 +58,15 @@ const routeRateLimit = {
   combined: (limiters) => {
     return (req, res, next) => {
       let index = 0;
-      
+
       const applyNext = () => {
         if (index >= limiters.length) {
           return next();
         }
-        
+
         const limiter = limiters[index];
         index++;
-        
+
         if (typeof limiter === 'function') {
           limiter(req, res, applyNext);
         } else if (typeof limiter === 'string') {
@@ -81,7 +81,7 @@ const routeRateLimit = {
           applyNext();
         }
       };
-      
+
       applyNext();
     };
   },
@@ -89,32 +89,32 @@ const routeRateLimit = {
   // Apply rate limiting based on route path
   byPath: (req, res, next) => {
     const path = req.path;
-    
+
     // Authentication routes
     if (path.startsWith('/auth') || path.startsWith('/api/auth')) {
       return authLimiter(req, res, next);
     }
-    
+
     // MFA routes
     if (path.includes('/mfa') || path.includes('/totp')) {
       return mfaLimiter(req, res, next);
     }
-    
+
     // File upload routes
     if (path.includes('/upload') || path.includes('/file')) {
       return uploadLimiter(req, res, next);
     }
-    
+
     // Admin routes
     if (path.startsWith('/admin') || path.includes('/rbac') || path.includes('/settings')) {
       return adminLimiter(req, res, next);
     }
-    
+
     // API routes
     if (path.startsWith('/api')) {
       return apiLimiter(req, res, next);
     }
-    
+
     // Default to general limiting
     return generalLimiter(req, res, next);
   },
@@ -122,7 +122,7 @@ const routeRateLimit = {
   // Apply rate limiting based on HTTP method
   byMethod: (req, res, next) => {
     const method = req.method;
-    
+
     // Stricter limits for destructive operations
     if (method === 'DELETE') {
       const strictLimiter = require('express-rate-limit')({
@@ -134,7 +134,7 @@ const routeRateLimit = {
       });
       return strictLimiter(req, res, next);
     }
-    
+
     // Moderate limits for write operations
     if (method === 'POST' || method === 'PUT' || method === 'PATCH') {
       const writeLimiter = require('express-rate-limit')({
@@ -146,7 +146,7 @@ const routeRateLimit = {
       });
       return writeLimiter(req, res, next);
     }
-    
+
     // Default to general limiting for GET requests
     return generalLimiter(req, res, next);
   },
@@ -178,4 +178,4 @@ const routeRateLimit = {
   }
 };
 
-module.exports = routeRateLimit; 
+module.exports = routeRateLimit;

@@ -8,75 +8,75 @@ const UserSchema = new mongoose.Schema(
       required: true,
       unique: true,
       lowercase: true,
-      trim: true,
+      trim: true
     },
     password: {
       type: String,
-      required: false,
+      required: false
     },
     name: {
       type: String,
-      trim: true,
+      trim: true
     },
     firstName: {
       type: String,
-      trim: true,
+      trim: true
     },
     lastName: {
       type: String,
-      trim: true,
+      trim: true
     },
     picture: {
       type: String,
-      trim: true,
+      trim: true
     },
     oauthProvider: {
       type: String,
       enum: ['local', 'oauth2'],
-      default: 'local',
+      default: 'local'
     },
     oauthId: {
       type: String,
-      trim: true,
+      trim: true
     },
     isActive: {
       type: Boolean,
-      default: true,
+      default: true
     },
     lastLogin: {
       type: Date,
-      default: Date.now,
+      default: Date.now
     },
     // MFA Configuration (user-level storage, tenant-controlled)
     mfaMethod: {
       type: String,
       enum: ['totp', 'sms', 'voice', 'email'],
-      default: 'totp',
+      default: 'totp'
     },
     phoneNumber: {
       type: String,
-      trim: true,
+      trim: true
     },
     countryCode: {
       type: String,
       default: '+1',
-      trim: true,
+      trim: true
     },
     totpSecret: {
       type: String,
-      trim: true,
+      trim: true
     },
     mfaSetupCompleted: {
       type: Boolean,
-      default: false,
+      default: false
     },
     metadata: {
       type: mongoose.Schema.Types.Mixed,
-      default: {},
-    },
+      default: {}
+    }
   },
   {
-    timestamps: true,
+    timestamps: true
   }
 );
 

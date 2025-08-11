@@ -30,7 +30,7 @@ app.use(
     origin: ['http://localhost:3001', 'http://localhost:3000', 'http://localhost:5173'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
   })
 );
 
@@ -46,10 +46,10 @@ app.set('views', path.join(__dirname, 'views'));
 // Database connection
 async function connectToDatabase() {
   const transaction = require('./config/sentry').createTransaction('database.connection', 'db');
-  
+
   try {
     mongoose.set('strictQuery', false);
-    
+
     await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/admin-ui', {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -59,9 +59,9 @@ async function connectToDatabase() {
       minPoolSize: 1,
       maxIdleTimeMS: 30000,
       retryWrites: true,
-      w: 'majority',
+      w: 'majority'
     });
-    
+
     await new Promise((resolve, reject) => {
       if (mongoose.connection.readyState === 1) {
         resolve();
@@ -70,29 +70,29 @@ async function connectToDatabase() {
         mongoose.connection.once('error', reject);
       }
     });
-    
+
     console.log('✅ Connected to MongoDB');
-    
+
     if (transaction) {
       transaction.setStatus('ok');
       transaction.finish();
     }
-    
+
     return true;
   } catch (err) {
     console.error('❌ MongoDB connection error:', err);
     console.log('Server will continue without database connection');
-    
+
     if (transaction) {
       transaction.setStatus('internal_error');
       transaction.finish();
     }
-    
-    captureError(err, { 
+
+    captureError(err, {
       context: 'database.connection',
       mongodbUri: process.env.MONGODB_URI ? 'configured' : 'default'
     });
-    
+
     return false;
   }
 }
@@ -107,25 +107,25 @@ app.use(
       mongoUrl: process.env.MONGODB_URI || 'mongodb://localhost:27017/admin-ui',
       collectionName: 'sessions',
       ttl: 24 * 60 * 60, // 1 day
-      autoRemove: 'native',
+      autoRemove: 'native'
     }),
     cookie: {
       secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
-    },
+      maxAge: 24 * 60 * 60 * 1000 // 1 day
+    }
   })
 );
 
 // Initialize the application
 async function initializeApp() {
   const transaction = require('./config/sentry').createTransaction('app.initialization', 'app');
-  
+
   try {
     // Connect to database first
     console.log('🔧 Connecting to database...');
     const dbConnected = await connectToDatabase();
-    
+
     if (!dbConnected) {
       console.log('⚠️ Warning: Database not connected. Some features may not work.');
     } else {
@@ -139,13 +139,13 @@ async function initializeApp() {
         // Add any config here
       },
       logger: require('./utils/logger'),
-      mongoose: mongoose,
+      mongoose,
       models: {}
     });
 
     // Get passport from admin-ui submodule
     const adminPassport = adminUI.getPassport();
-    
+
     // Use passport from admin-ui submodule
     app.use(adminPassport.initialize());
     app.use(adminPassport.session());
@@ -161,10 +161,10 @@ async function initializeApp() {
       if (!req.isAuthenticated()) {
         return res.redirect('/auth/login');
       }
-      
+
       // Get tenant info from session
       const tenant = req.session.tenantId ? { tenantId: req.session.tenantId } : null;
-      
+
       res.render('dashboard', {
         user: req.user,
         tenant: tenant || { name: 'Default Tenant', tenantId: 'default' },
@@ -196,20 +196,20 @@ async function initializeApp() {
       console.log(`🔐 Login: http://localhost:${PORT}/login`);
       console.log(`⚙️  API: http://localhost:${PORT}/api`);
     });
-    
+
     if (transaction) {
       transaction.setStatus('ok');
       transaction.finish();
     }
-    
+
   } catch (err) {
     console.error('❌ Failed to initialize application:', err);
-    
+
     if (transaction) {
       transaction.setStatus('internal_error');
       transaction.finish();
     }
-    
+
     captureError(err, { context: 'app.initialization' });
     process.exit(1);
   }
@@ -220,4 +220,4 @@ initializeApp().catch(err => {
   console.error('❌ Failed to initialize application:', err);
   captureError(err, { context: 'app.startup' });
   process.exit(1);
-}); 
+});

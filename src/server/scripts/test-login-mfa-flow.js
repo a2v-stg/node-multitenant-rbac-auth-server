@@ -11,13 +11,13 @@ async function testLoginMfaFlow() {
       'http://localhost:3000/auth/login',
       {
         username: 'testuser@example.com',
-        password: 'password123',
+        password: 'password123'
       },
       {
         maxRedirects: 0,
         validateStatus(status) {
           return status >= 200 && status < 400; // Accept redirects
-        },
+        }
       }
     );
 
@@ -30,7 +30,7 @@ async function testLoginMfaFlow() {
     // First, we need to be authenticated
     const session = axios.create({
       withCredentials: true,
-      baseURL: 'http://localhost:3000',
+      baseURL: 'http://localhost:3000'
     });
 
     // Get available tenants
@@ -46,7 +46,7 @@ async function testLoginMfaFlow() {
 
       // Select tenant
       const selectResponse = await session.post('/auth/select-tenant', {
-        tenantId: tenant.tenantId,
+        tenantId: tenant.tenantId
       });
 
       console.log('✅ Tenant selection successful');

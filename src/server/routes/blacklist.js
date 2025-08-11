@@ -16,29 +16,29 @@ router.get('/blacklist', async (req, res) => {
         entityType: 'SSN',
         entityValue: '123-45-6789',
         source: 'Manual',
-        createdAt: new Date('2024-01-15'),
+        createdAt: new Date('2024-01-15')
       },
       {
         _id: '2',
         entityType: 'ACCOUNT_EMAIL',
         entityValue: 'fraud@example.com',
         source: 'System',
-        createdAt: new Date('2024-01-10'),
+        createdAt: new Date('2024-01-10')
       },
       {
         _id: '3',
         entityType: 'ACCOUNT_MOBILE',
         entityValue: '+1-555-123-4567',
         source: 'Manual',
-        createdAt: new Date('2024-01-05'),
+        createdAt: new Date('2024-01-05')
       },
       {
         _id: '4',
         entityType: 'IP_ADDRESS',
         entityValue: '192.168.1.100',
         source: 'BaseProduct',
-        createdAt: new Date('2024-01-01'),
-      },
+        createdAt: new Date('2024-01-01')
+      }
     ];
 
     // Filter by search term if provided
@@ -63,7 +63,7 @@ router.get('/blacklist', async (req, res) => {
       blackListItems: paginatedItems,
       totalBlackListEntities,
       currentPage: page,
-      totalPages: Math.ceil(totalBlackListEntities / pageSize),
+      totalPages: Math.ceil(totalBlackListEntities / pageSize)
     });
   } catch (error) {
     console.error('Error fetching blacklist:', error);
@@ -87,7 +87,7 @@ router.post('/blacklist/add', async (req, res) => {
     console.log('Adding to blacklist:', {
       entityType,
       entityValue,
-      tenant_name,
+      tenant_name
     });
 
     // Simulate success
@@ -99,8 +99,8 @@ router.post('/blacklist/add', async (req, res) => {
         entityType,
         entityValue,
         source: 'Manual',
-        createdAt: new Date(),
-      },
+        createdAt: new Date()
+      }
     });
   } catch (error) {
     console.error('Error adding to blacklist:', error);
@@ -124,13 +124,13 @@ router.post('/blacklist/delete', async (req, res) => {
     console.log('Deleting from blacklist:', {
       entityType,
       entityValue,
-      tenant_name,
+      tenant_name
     });
 
     // Simulate success
     res.status(200).json({
       success: true,
-      message: 'Entity deleted from blacklist successfully',
+      message: 'Entity deleted from blacklist successfully'
     });
   } catch (error) {
     console.error('Error deleting from blacklist:', error);
@@ -152,10 +152,10 @@ router.get('/blacklist/summary', async (req, res) => {
         IP_ADDRESS: 20,
         ACCOUNT_NAME: 15,
         TIN: 10,
-        EIN: 5,
+        EIN: 5
       },
       recentAdditions: 12,
-      lastUpdated: new Date(),
+      lastUpdated: new Date()
     };
 
     res.json(summary);

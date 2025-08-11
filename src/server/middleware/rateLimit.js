@@ -21,11 +21,11 @@ const generalLimiter = rateLimit({
     // Skip rate limiting for certain IPs
     const clientIP = req.ip || req.connection.remoteAddress;
     if (config.skipIPs.includes(clientIP)) return true;
-    
+
     // Skip rate limiting for certain user agents
     const userAgent = req.get('User-Agent');
     if (userAgent && config.skipUserAgents.some(agent => userAgent.includes(agent))) return true;
-    
+
     return false;
   },
   handler: (req, res) => {
@@ -191,7 +191,7 @@ const adminLimiter = rateLimit({
 // Dynamic rate limiter based on user role
 const dynamicLimiter = (role) => {
   const limits = config.roleBased;
-  
+
   return rateLimit({
     windowMs: config.general.windowMs,
     max: limits[role] || limits.default,
@@ -228,7 +228,7 @@ const applyRateLimiting = (req, res, next) => {
   // Apply general limiter first
   generalLimiter(req, res, (err) => {
     if (err) return next(err);
-    
+
     // Apply speed limiter
     speedLimiter(req, res, next);
   });
@@ -245,4 +245,4 @@ module.exports = {
   dynamicLimiter,
   speedLimiter,
   applyRateLimiting
-}; 
+};

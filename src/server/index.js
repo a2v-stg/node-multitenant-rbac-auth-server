@@ -10,31 +10,31 @@ let context;
 
 async function initApp({ config = {}, logger: customLogger = logger, mongoose, models = {} }) {
   const transaction = createTransaction('admin-ui.initApp', 'app');
-  
+
   try {
     console.log('🔧 Initializing Admin UI submodule...');
     console.log('🔍 Models:', models);
-    
+
     // Create context with dependencies
     context = createContext({ config, logger: customLogger, mongoose, models });
-    
+
     // Initialize the context globally
     initContext(context);
-    
+
     console.log('✅ Admin UI submodule initialized');
-    
+
     if (transaction) {
       transaction.setStatus('ok');
       transaction.finish();
     }
   } catch (error) {
     console.error('❌ Failed to initialize Admin UI submodule:', error);
-    
+
     if (transaction) {
       transaction.setStatus('internal_error');
       transaction.finish();
     }
-    
+
     captureError(error, { context: 'admin-ui.initApp', models: Object.keys(models) });
     throw error;
   }
@@ -42,14 +42,14 @@ async function initApp({ config = {}, logger: customLogger = logger, mongoose, m
 
 function getRoutes() {
   if (!context) {
-    throw new Error("Admin UI not initialized. Call initApp() first.");
+    throw new Error('Admin UI not initialized. Call initApp() first.');
   }
-  
+
   const transaction = createTransaction('admin-ui.getRoutes', 'app');
-  
+
   try {
     const router = express.Router();
-    
+
     // Import routes with context
     const authRoutes = require('./routes/auth');
     const tenantRoutes = require('./routes/tenant');
@@ -58,12 +58,11 @@ function getRoutes() {
     const blacklistRoutes = require('./routes/blacklist');
     //const coreRoutes = require('./routes/core');
     const settingsRoutes = require('./routes/settings');
-    const testRoutes = require('./tests/unit/routes.test');
-    
+
     // Apply rate limiting middleware BEFORE routes
     const { setupAllRateLimiting } = require('./middleware/setupRateLimit');
     setupAllRateLimiting(router);
-    
+
     // Apply routes
     router.use('/auth', authRoutes);
     router.use('/api/auth', authRoutes); // Add auth routes to /api path as well
@@ -75,22 +74,19 @@ function getRoutes() {
     router.use('/api', blacklistRoutes);
     //router.use('/api/core', coreRoutes);
     router.use('/api/settings', settingsRoutes);
-    
-    // Add test routes for rate limiting verification
-    router.use('/test', testRoutes);
-    
+
     if (transaction) {
       transaction.setStatus('ok');
       transaction.finish();
     }
-    
+
     return router;
   } catch (error) {
     if (transaction) {
       transaction.setStatus('internal_error');
       transaction.finish();
     }
-    
+
     captureError(error, { context: 'admin-ui.getRoutes' });
     throw error;
   }
@@ -98,31 +94,31 @@ function getRoutes() {
 
 function getMiddleware() {
   if (!context) {
-    throw new Error("Admin UI not initialized. Call initApp() first.");
+    throw new Error('Admin UI not initialized. Call initApp() first.');
   }
-  
+
   const transaction = createTransaction('admin-ui.getMiddleware', 'app');
-  
+
   try {
     const { ensureTenantSelected } = require('./middleware/tenantValidation');
     const { addUserPermissions } = require('./middleware/rbacMiddleware');
     const { errorHandler } = require('./middleware/errorHandler');
-    
+
     // Import rate limiting middleware
-    const { 
-      generalLimiter, 
-      authLimiter, 
-      apiLimiter, 
-      mfaLimiter, 
+    const {
+      generalLimiter,
+      authLimiter,
+      apiLimiter,
+      mfaLimiter,
       adminLimiter,
-      routeRateLimit 
+      routeRateLimit
     } = require('./middleware/rateLimit');
-    
+
     if (transaction) {
       transaction.setStatus('ok');
       transaction.finish();
     }
-    
+
     return {
       ensureTenantSelected,
       addUserPermissions,
@@ -142,7 +138,7 @@ function getMiddleware() {
       transaction.setStatus('internal_error');
       transaction.finish();
     }
-    
+
     captureError(error, { context: 'admin-ui.getMiddleware' });
     throw error;
   }
@@ -150,30 +146,30 @@ function getMiddleware() {
 
 function getPassport() {
   if (!context) {
-    throw new Error("Admin UI not initialized. Call initApp() first.");
+    throw new Error('Admin UI not initialized. Call initApp() first.');
   }
-  
+
   const transaction = createTransaction('admin-ui.getPassport', 'app');
-  
+
   try {
     const passport = require('passport');
     const { setupPassport } = require('./config/passport');
-    
+
     // Setup passport with context
     setupPassport(passport);
-    
+
     if (transaction) {
       transaction.setStatus('ok');
       transaction.finish();
     }
-    
+
     return passport;
   } catch (error) {
     if (transaction) {
       transaction.setStatus('internal_error');
       transaction.finish();
     }
-    
+
     captureError(error, { context: 'admin-ui.getPassport' });
     throw error;
   }
@@ -183,5 +179,5 @@ module.exports = {
   initApp,
   getRoutes,
   getMiddleware,
-  getPassport,
-}; 
+  getPassport
+};

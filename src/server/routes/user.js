@@ -15,7 +15,7 @@ const getModels = () => {
     Tenant: context.getModel('Tenant'),
     UserTenant: context.getModel('UserTenant'),
     Role: context.getModel('Role'),
-    UserRole: context.getModel('UserRole'),
+    UserRole: context.getModel('UserRole')
   };
 };
 
@@ -36,7 +36,7 @@ const cleanupOrphanedUserTenants = async () => {
         `Cleaning up ${orphanedRecords.length} orphaned UserTenant records`
       );
       await UserTenant.deleteMany({
-        _id: { $in: orphanedRecords.map(ut => ut._id) },
+        _id: { $in: orphanedRecords.map(ut => ut._id) }
       });
     }
   } catch (error) {
@@ -49,7 +49,7 @@ router.get('/', ensureAuthenticated, addUserPermissions, async (req, res) => {
   try {
     const { Tenant, UserTenant, UserRole } = getModels();
     const currentTenant = await Tenant.findOne({
-      tenantId: req.session.tenantId,
+      tenantId: req.session.tenantId
     });
     if (!currentTenant) {
       return res.status(404).json({ error: 'Current tenant not found' });
@@ -60,7 +60,7 @@ router.get('/', ensureAuthenticated, addUserPermissions, async (req, res) => {
 
     // Get users for current tenant
     const userTenants = await UserTenant.find({
-      tenant: currentTenant._id,
+      tenant: currentTenant._id
     }).populate('user');
 
     // Filter out orphaned records where user is null
@@ -71,7 +71,7 @@ router.get('/', ensureAuthenticated, addUserPermissions, async (req, res) => {
       validUserTenants.map(async ut => {
         const userRoles = await UserRole.find({
           user: ut.user._id,
-          tenant: currentTenant._id,
+          tenant: currentTenant._id
         }).populate('role');
 
         return {
@@ -82,14 +82,14 @@ router.get('/', ensureAuthenticated, addUserPermissions, async (req, res) => {
           lastLogin: ut.user.lastLogin,
           oauthProvider: ut.user.oauthProvider,
           roles: userRoles.map(ur => ur.role),
-          createdAt: ut.user.createdAt,
+          createdAt: ut.user.createdAt
         };
       })
     );
 
     res.json({
       success: true,
-      data: users,
+      data: users
     });
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -106,19 +106,19 @@ router.get(
     try {
       const { Role, Tenant } = getModels();
       const currentTenant = await Tenant.findOne({
-        tenantId: req.session.tenantId,
+        tenantId: req.session.tenantId
       });
       if (!currentTenant) {
         return res.status(404).json({ error: 'Current tenant not found' });
       }
 
       const roles = await Role.find({ tenant: currentTenant._id }).sort({
-        name: 1,
+        name: 1
       });
 
       res.json({
         success: true,
-        data: roles,
+        data: roles
       });
     } catch (error) {
       console.error('Error fetching roles:', error);
@@ -142,11 +142,11 @@ router.get(
 
       // Check if user belongs to current tenant
       const currentTenant = await Tenant.findOne({
-        tenantId: req.session.tenantId,
+        tenantId: req.session.tenantId
       });
       const userTenant = await UserTenant.findOne({
         user: user._id,
-        tenant: currentTenant._id,
+        tenant: currentTenant._id
       });
 
       if (!userTenant) {
@@ -156,15 +156,15 @@ router.get(
       // Get user roles for current tenant
       const userRoles = await UserRole.find({
         user: user._id,
-        tenant: currentTenant._id,
+        tenant: currentTenant._id
       }).populate('role');
 
       res.json({
         success: true,
         data: {
           user,
-          roles: userRoles.map(ur => ur.role),
-        },
+          roles: userRoles.map(ur => ur.role)
+        }
       });
     } catch (error) {
       console.error('Error fetching user:', error);
@@ -179,7 +179,7 @@ router.post('/', ensureAuthenticated, addUserPermissions, async (req, res) => {
     // Only default tenant users can create users
     if (!isDefaultTenantUser(req)) {
       return res.status(403).json({
-        error: 'Access denied. Only default tenant users can create users.',
+        error: 'Access denied. Only default tenant users can create users.'
       });
     }
 
@@ -189,7 +189,7 @@ router.post('/', ensureAuthenticated, addUserPermissions, async (req, res) => {
     // Validate required fields
     if (!email || !password || !fullName || !tenantId) {
       return res.status(400).json({
-        error: 'Email, password, full name, and tenant are required',
+        error: 'Email, password, full name, and tenant are required'
       });
     }
 
@@ -197,7 +197,7 @@ router.post('/', ensureAuthenticated, addUserPermissions, async (req, res) => {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
-        error: 'User with this email already exists',
+        error: 'User with this email already exists'
       });
     }
 
@@ -205,7 +205,7 @@ router.post('/', ensureAuthenticated, addUserPermissions, async (req, res) => {
     const tenant = await Tenant.findOne({ tenantId });
     if (!tenant) {
       return res.status(400).json({
-        error: 'Specified tenant does not exist',
+        error: 'Specified tenant does not exist'
       });
     }
 
@@ -218,7 +218,7 @@ router.post('/', ensureAuthenticated, addUserPermissions, async (req, res) => {
       email,
       password: hashedPassword,
       fullName,
-      isActive: true,
+      isActive: true
     });
 
     await user.save();
@@ -226,7 +226,7 @@ router.post('/', ensureAuthenticated, addUserPermissions, async (req, res) => {
     // Assign user to tenant
     const userTenant = new UserTenant({
       user: user._id,
-      tenant: tenant._id,
+      tenant: tenant._id
     });
 
     await userTenant.save();
@@ -236,7 +236,7 @@ router.post('/', ensureAuthenticated, addUserPermissions, async (req, res) => {
       const roleAssignments = roles.map(roleId => ({
         user: user._id,
         tenant: tenant._id,
-        role: roleId,
+        role: roleId
       }));
 
       await UserRole.insertMany(roleAssignments);
@@ -245,7 +245,7 @@ router.post('/', ensureAuthenticated, addUserPermissions, async (req, res) => {
     res.status(201).json({
       success: true,
       data: user,
-      message: 'User created successfully',
+      message: 'User created successfully'
     });
   } catch (error) {
     console.error('Error creating user:', error);
@@ -268,11 +268,11 @@ router.put(
 
       // Check if user belongs to current tenant
       const currentTenant = await Tenant.findOne({
-        tenantId: req.session.tenantId,
+        tenantId: req.session.tenantId
       });
       const userTenant = await UserTenant.findOne({
         user: user._id,
-        tenant: currentTenant._id,
+        tenant: currentTenant._id
       });
 
       if (!userTenant) {
@@ -299,7 +299,7 @@ router.put(
         // Remove existing roles
         await UserRole.deleteMany({
           user: user._id,
-          tenant: currentTenant._id,
+          tenant: currentTenant._id
         });
 
         // Add new roles
@@ -307,7 +307,7 @@ router.put(
           const roleAssignments = roles.map(roleId => ({
             user: user._id,
             tenant: currentTenant._id,
-            role: roleId,
+            role: roleId
           }));
 
           await UserRole.insertMany(roleAssignments);
@@ -317,7 +317,7 @@ router.put(
       res.json({
         success: true,
         data: user,
-        message: 'User updated successfully',
+        message: 'User updated successfully'
       });
     } catch (error) {
       console.error('Error updating user:', error);
@@ -336,7 +336,7 @@ router.delete(
       // Only default tenant users can delete users
       if (!isDefaultTenantUser(req)) {
         return res.status(403).json({
-          error: 'Access denied. Only default tenant users can delete users.',
+          error: 'Access denied. Only default tenant users can delete users.'
         });
       }
 
@@ -348,11 +348,11 @@ router.delete(
 
       // Check if user belongs to current tenant
       const currentTenant = await Tenant.findOne({
-        tenantId: req.session.tenantId,
+        tenantId: req.session.tenantId
       });
       const userTenant = await UserTenant.findOne({
         user: user._id,
-        tenant: currentTenant._id,
+        tenant: currentTenant._id
       });
 
       if (!userTenant) {
@@ -370,7 +370,7 @@ router.delete(
 
       res.json({
         success: true,
-        message: 'User deleted successfully',
+        message: 'User deleted successfully'
       });
     } catch (error) {
       console.error('Error deleting user:', error);
@@ -390,7 +390,7 @@ router.get(
       if (!isDefaultTenantUser(req)) {
         return res.status(403).json({
           error:
-            'Access denied. Only default tenant users can view user tenants.',
+            'Access denied. Only default tenant users can view user tenants.'
         });
       }
 
@@ -409,12 +409,12 @@ router.get(
         id: ut.tenant._id,
         tenantId: ut.tenant.tenantId,
         tenantName: ut.tenant.tenantName,
-        envName: ut.tenant.envName,
+        envName: ut.tenant.envName
       }));
 
       res.json({
         success: true,
-        data: tenants,
+        data: tenants
       });
     } catch (error) {
       console.error('Error fetching user tenants:', error);
@@ -433,7 +433,7 @@ router.post(
       // Only default tenant users can assign tenants
       if (!isDefaultTenantUser(req)) {
         return res.status(403).json({
-          error: 'Access denied. Only default tenant users can assign tenants.',
+          error: 'Access denied. Only default tenant users can assign tenants.'
         });
       }
 
@@ -456,7 +456,7 @@ router.post(
       }
       const criteria = {
         user: user._id,
-        tenant: tenant._id,
+        tenant: tenant._id
       };
       console.log('criteria', criteria);
 
@@ -465,7 +465,7 @@ router.post(
 
       if (existingAssignment) {
         return res.status(400).json({
-          error: 'User is already assigned to this tenant',
+          error: 'User is already assigned to this tenant'
         });
       }
 
@@ -480,8 +480,8 @@ router.post(
         data: {
           userId: user._id,
           tenantId: tenant.tenantId,
-          tenantName: tenant.tenantName,
-        },
+          tenantName: tenant.tenantName
+        }
       });
     } catch (error) {
       console.error('Error assigning tenant to user:', error);
@@ -501,7 +501,7 @@ router.delete(
       if (!isDefaultTenantUser(req)) {
         return res.status(403).json({
           error:
-            'Access denied. Only default tenant users can remove tenant assignments.',
+            'Access denied. Only default tenant users can remove tenant assignments.'
         });
       }
 
@@ -512,7 +512,7 @@ router.delete(
       }
 
       const tenant = await Tenant.findOne({
-        tenantId: req.params.tenantId,
+        tenantId: req.params.tenantId
       });
       if (!tenant) {
         return res.status(404).json({ error: 'Tenant not found' });
@@ -521,30 +521,30 @@ router.delete(
       // Check if user is assigned to this tenant
       const userTenant = await UserTenant.findOne({
         user: user._id,
-        tenant: tenant._id,
+        tenant: tenant._id
       });
 
       if (!userTenant) {
         return res.status(400).json({
-          error: 'User is not assigned to this tenant',
+          error: 'User is not assigned to this tenant'
         });
       }
 
       // Remove user from tenant
       await UserTenant.deleteOne({
         user: user._id,
-        tenant: tenant._id,
+        tenant: tenant._id
       });
 
       // Remove user roles for this tenant
       await UserRole.deleteMany({
         user: user._id,
-        tenant: tenant._id,
+        tenant: tenant._id
       });
 
       res.json({
         success: true,
-        message: `User ${user.email} removed from tenant ${tenant.tenantName}`,
+        message: `User ${user.email} removed from tenant ${tenant.tenantName}`
       });
     } catch (error) {
       console.error('Error removing tenant from user:', error);

@@ -11,10 +11,10 @@ const Organization = require('../models/Organization');
 router.get('/', ensureAuthenticated, addUserPermissions, requirePermission('settings:read'), async (req, res) => {
   try {
     const tenantId = req.session.tenantId || req.tenant?._id;
-    
+
     // Get organization settings
     let organization = await Organization.findOne({ organizationId: 'default' });
-    
+
     if (!organization) {
       // Create default organization if it doesn't exist
       organization = new Organization({
@@ -52,7 +52,7 @@ router.get('/', ensureAuthenticated, addUserPermissions, requirePermission('sett
 router.get('/organization', ensureAuthenticated, addUserPermissions, requirePermission('settings:read'), async (req, res) => {
   try {
     let organization = await Organization.findOne({ organizationId: 'default' });
-    
+
     if (!organization) {
       // Create default organization if it doesn't exist
       organization = new Organization({
@@ -90,7 +90,7 @@ router.put('/organization', ensureAuthenticated, addUserPermissions, requirePerm
     } = req.body;
 
     let organization = await Organization.findOne({ organizationId: 'default' });
-    
+
     if (!organization) {
       organization = new Organization({
         organizationId: 'default'
@@ -166,4 +166,4 @@ router.get('/system', ensureAuthenticated, addUserPermissions, requirePermission
   }
 });
 
-module.exports = router; 
+module.exports = router;

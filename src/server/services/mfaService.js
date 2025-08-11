@@ -33,7 +33,7 @@ class MfaService {
     const options = {
       issuer: 'Fraud Detection Engine',
       name: `Fraud Detection Engine (${email})`,
-      length: 32,
+      length: 32
     };
 
     return speakeasy.generateSecret(options);
@@ -47,7 +47,7 @@ class MfaService {
       secret,
       encoding: 'base32',
       token,
-      window: 2, // Allow 2 time steps (60 seconds) for clock skew
+      window: 2 // Allow 2 time steps (60 seconds) for clock skew
     });
   }
 
@@ -80,14 +80,14 @@ class MfaService {
         .services(process.env.TWILIO_VERIFY_SERVICE_SID)
         .verifications.create({
           to: formattedPhone,
-          channel: 'sms',
+          channel: 'sms'
         });
 
       return {
         success: true,
         sid: verification.sid,
         status: verification.status,
-        message: 'SMS verification sent successfully',
+        message: 'SMS verification sent successfully'
       };
     } catch (error) {
       console.error('Twilio SMS verification error:', error);
@@ -112,14 +112,14 @@ class MfaService {
         .services(process.env.TWILIO_VERIFY_SERVICE_SID)
         .verifications.create({
           to: formattedPhone,
-          channel: 'call',
+          channel: 'call'
         });
 
       return {
         success: true,
         sid: verification.sid,
         status: verification.status,
-        message: 'Voice verification sent successfully',
+        message: 'Voice verification sent successfully'
       };
     } catch (error) {
       console.error('Twilio voice verification error:', error);
@@ -144,7 +144,7 @@ class MfaService {
         .services(process.env.TWILIO_VERIFY_SERVICE_SID)
         .verificationChecks.create({
           to: formattedPhone,
-          code: token,
+          code: token
         });
 
       const isApproved = verificationCheck.status === 'approved';
@@ -154,7 +154,7 @@ class MfaService {
         status: verificationCheck.status,
         message: isApproved
           ? 'Verification successful'
-          : 'Verification failed',
+          : 'Verification failed'
       };
     } catch (error) {
       console.error('Twilio verification error:', error);
@@ -175,14 +175,14 @@ class MfaService {
         .services(process.env.TWILIO_VERIFY_SERVICE_SID)
         .verifications.create({
           to: email,
-          channel: 'email',
+          channel: 'email'
         });
 
       return {
         success: true,
         sid: verification.sid,
         status: verification.status,
-        message: 'Email verification sent successfully',
+        message: 'Email verification sent successfully'
       };
     } catch (error) {
       console.error('Twilio email verification error:', error);
@@ -203,7 +203,7 @@ class MfaService {
         .services(process.env.TWILIO_VERIFY_SERVICE_SID)
         .verificationChecks.create({
           to: email,
-          code: token,
+          code: token
         });
 
       const isApproved = verificationCheck.status === 'approved';
@@ -213,7 +213,7 @@ class MfaService {
         status: verificationCheck.status,
         message: isApproved
           ? 'Email verification successful'
-          : 'Email verification failed',
+          : 'Email verification failed'
       };
     } catch (error) {
       console.error('Twilio email verification error:', error);
@@ -258,7 +258,7 @@ class MfaService {
       configured: twilioClient !== null,
       accountSid: process.env.TWILIO_ACCOUNT_SID ? 'configured' : 'missing',
       authToken: process.env.TWILIO_AUTH_TOKEN ? 'configured' : 'missing',
-      verifyServiceSid: process.env.TWILIO_VERIFY_SERVICE_SID ? 'configured' : 'missing',
+      verifyServiceSid: process.env.TWILIO_VERIFY_SERVICE_SID ? 'configured' : 'missing'
     };
   }
 }

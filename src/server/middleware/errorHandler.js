@@ -5,21 +5,21 @@ const errorHandler = (err, req, res, next) => {
   if (err.name === 'ValidationError') {
     return res.status(400).json({
       error: 'Validation Error',
-      details: err.message,
+      details: err.message
     });
   }
 
   if (err.name === 'MongoError' && err.code === 11000) {
     return res.status(409).json({
       error: 'Duplicate Entry',
-      details: 'Resource already exists',
+      details: 'Resource already exists'
     });
   }
 
   if (err.name === 'CastError') {
     return res.status(400).json({
       error: 'Invalid ID',
-      details: 'Invalid resource identifier',
+      details: 'Invalid resource identifier'
     });
   }
 
@@ -33,7 +33,7 @@ const errorHandler = (err, req, res, next) => {
   res.status(statusCode).json({
     error: 'Server Error',
     message,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });
 };
 

@@ -6,7 +6,7 @@ async function testAuthEndpoint() {
 
     const loginData = {
       username: 'local@email.com',
-      password: 'password123',
+      password: 'password123'
     };
 
     console.log('📤 Sending request to /auth/login');
@@ -19,7 +19,7 @@ async function testAuthEndpoint() {
         maxRedirects: 0,
         validateStatus(status) {
           return status >= 200 && status < 400; // Accept redirects
-        },
+        }
       }
     );
 

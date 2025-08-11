@@ -8,14 +8,14 @@ async function testSimpleSession() {
     // Create axios instance with credentials
     const session = axios.create({
       withCredentials: true,
-      baseURL: 'http://localhost:3000',
+      baseURL: 'http://localhost:3000'
     });
 
     // 1. Test login
     console.log('1. Testing login...');
     const loginResponse = await session.post('/auth/login', {
       username: 'test@example.com',
-      password: 'password123',
+      password: 'password123'
     });
 
     console.log('✅ Login successful, status:', loginResponse.status);

@@ -21,7 +21,7 @@ class AuthService {
         UserTenant: context.getModel('UserTenant'),
         Tenant: context.getModel('Tenant'),
         User: context.getModel('User'),
-        Organization: context.getModel('Organization'),
+        Organization: context.getModel('Organization')
       };
     }
     return this.models;
@@ -48,14 +48,14 @@ class AuthService {
           return {
             type: 'mfa_setup_required',
             user,
-            redirectUrl: 'http://localhost:3001/mfa-setup',
+            redirectUrl: 'http://localhost:3001/mfa-setup'
           };
         } else {
           // MFA verification required at organization level
           return {
             type: 'mfa_required',
             user,
-            redirectUrl: 'http://localhost:3001/mfa',
+            redirectUrl: 'http://localhost:3001/mfa'
           };
         }
       }
@@ -72,7 +72,7 @@ class AuthService {
   async handleOAuthUserLogin(user) {
     try {
       const { UserTenant, Tenant } = this._getModels();
-      
+
       // Get all user's tenants
       const userTenants = await UserTenant.find({ user: user._id }).populate(
         'tenant'
@@ -86,7 +86,7 @@ class AuthService {
         return {
           type: 'multiple_tenants',
           tenants: userTenants.map(ut => ut.tenant),
-          redirectUrl: 'http://localhost:3001/tenant-selection',
+          redirectUrl: 'http://localhost:3001/tenant-selection'
         };
       }
 
@@ -107,7 +107,7 @@ class AuthService {
 
         await UserTenant.create({
           user: user._id,
-          tenant: selectedTenant._id,
+          tenant: selectedTenant._id
         });
 
         await this.initializeUserInTenant(user._id, selectedTenant._id);
@@ -120,7 +120,7 @@ class AuthService {
       return {
         type: 'single',
         tenant: selectedTenant,
-        redirectUrl: 'http://localhost:3001/dashboard',
+        redirectUrl: 'http://localhost:3001/dashboard'
       };
     } catch (error) {
       throw new Error(`OAuth login processing failed: ${error.message}`);
@@ -144,7 +144,7 @@ class AuthService {
         return {
           type: 'multiple_tenants',
           tenants: userTenants.map(ut => ut.tenant),
-          redirectUrl: 'http://localhost:3001/tenant-selection',
+          redirectUrl: 'http://localhost:3001/tenant-selection'
         };
       }
 
@@ -164,7 +164,7 @@ class AuthService {
         // Create user-tenant relationship
         await UserTenant.create({
           user: user._id,
-          tenant: selectedTenant._id,
+          tenant: selectedTenant._id
         });
 
         // Initialize RBAC roles for the tenant and assign default role to user
@@ -179,7 +179,7 @@ class AuthService {
       return {
         type: 'single',
         tenant: selectedTenant,
-        redirectUrl: 'http://localhost:3001/dashboard',
+        redirectUrl: 'http://localhost:3001/dashboard'
       };
     } catch (error) {
       throw new Error(`Tenant selection failed: ${error.message}`);
@@ -259,30 +259,30 @@ class AuthService {
       let isValid = false;
 
       switch (method) {
-        case 'totp':
-          if (user.totpSecret) {
-            isValid = mfaService.verifyTotpToken(user.totpSecret, token);
-          }
-          break;
-        case 'sms':
-        case 'voice':
-          if (user.phoneNumber) {
-            const result = await mfaService.verifyTwilioToken(
-              user.phoneNumber,
-              token,
-              user.countryCode || '+1'
-            );
-            isValid = result.success;
-          }
-          break;
-        case 'email':
-          if (user.email) {
-            const result = await mfaService.verifyEmailToken(user.email, token);
-            isValid = result.success;
-          }
-          break;
-        default:
-          throw new Error('Unsupported MFA method');
+      case 'totp':
+        if (user.totpSecret) {
+          isValid = mfaService.verifyTotpToken(user.totpSecret, token);
+        }
+        break;
+      case 'sms':
+      case 'voice':
+        if (user.phoneNumber) {
+          const result = await mfaService.verifyTwilioToken(
+            user.phoneNumber,
+            token,
+            user.countryCode || '+1'
+          );
+          isValid = result.success;
+        }
+        break;
+      case 'email':
+        if (user.email) {
+          const result = await mfaService.verifyEmailToken(user.email, token);
+          isValid = result.success;
+        }
+        break;
+      default:
+        throw new Error('Unsupported MFA method');
       }
 
       if (!isValid) {
@@ -312,7 +312,7 @@ class AuthService {
       // Then check if the user has access to this specific tenant
       const userTenant = await this._getModels().UserTenant.findOne({
         user: userId,
-        tenant: tenant._id,
+        tenant: tenant._id
       });
 
       if (!userTenant) {
@@ -347,7 +347,7 @@ class AuthService {
 
       const userTenant = await this._getModels().UserTenant.findOne({
         user: userId,
-        tenant: tenant._id,
+        tenant: tenant._id
       });
 
       if (!userTenant) {
@@ -371,7 +371,7 @@ class AuthService {
             type: 'mfa_setup_required',
             user,
             tenant,
-            redirectUrl: 'http://localhost:3001/mfa-setup',
+            redirectUrl: 'http://localhost:3001/mfa-setup'
           };
         } else {
           console.log('MFA required');
@@ -379,7 +379,7 @@ class AuthService {
             type: 'mfa_required',
             user,
             tenant,
-            redirectUrl: 'http://localhost:3001/mfa',
+            redirectUrl: 'http://localhost:3001/mfa'
           };
         }
       }
@@ -387,7 +387,7 @@ class AuthService {
       return {
         type: 'success',
         tenant,
-        redirectUrl: 'http://localhost:3001/dashboard',
+        redirectUrl: 'http://localhost:3001/dashboard'
       };
     } catch (error) {
       throw new Error(`Tenant selection failed: ${error.message}`);
@@ -571,7 +571,7 @@ class AuthService {
         enabled: organization.mfaEnabled,
         requiredForLocalUsers: organization.mfaRequiredForLocalUsers,
         methods: organization.mfaMethods,
-        gracePeriod: organization.mfaGracePeriod,
+        gracePeriod: organization.mfaGracePeriod
       };
     } catch (error) {
       throw new Error(`Failed to get organization MFA config: ${error.message}`);

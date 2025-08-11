@@ -8,7 +8,7 @@ mongoose.connect(
   process.env.MONGODB_URI || 'mongodb://localhost:27017/admin-ui',
   {
     useNewUrlParser: true,
-    useUnifiedTopology: true,
+    useUnifiedTopology: true
   }
 );
 
@@ -39,7 +39,7 @@ async function debugLoginFlow() {
         email: 'test@example.com',
         name: 'Test User',
         oauthProvider: 'local',
-        isActive: true,
+        isActive: true
       });
       await testUser.save();
       console.log('✅ Test user created:', testUser.email);
@@ -81,7 +81,7 @@ async function debugLoginFlow() {
       'User-tenant relationships:',
       userTenants.map(ut => ({
         user: ut.user.email,
-        tenant: ut.tenant.tenantName,
+        tenant: ut.tenant.tenantName
       }))
     );
 

@@ -47,5 +47,5 @@ function ensureAuthenticatedAndTenant(req, res, next) {
 
 module.exports = {
   ensureAuthenticated,
-  ensureAuthenticatedAndTenant,
+  ensureAuthenticatedAndTenant
 };

@@ -17,8 +17,8 @@ module.exports = {
       $or: [
         { oauthProvider: { $exists: false } },
         { isActive: { $exists: false } },
-        { lastLogin: { $exists: false } },
-      ],
+        { lastLogin: { $exists: false } }
+      ]
     });
 
     for (const user of usersToUpdate) {
@@ -58,9 +58,9 @@ module.exports = {
           lastName: 1,
           picture: 1,
           oauthId: 1,
-          metadata: 1,
-        },
+          metadata: 1
+        }
       }
     );
-  },
+  }
 };

@@ -18,5 +18,5 @@ module.exports = {
   down: async db => {
     // Rollback would drop all collections
     console.log('Rollback not implemented for initial schema');
-  },
+  }
 };

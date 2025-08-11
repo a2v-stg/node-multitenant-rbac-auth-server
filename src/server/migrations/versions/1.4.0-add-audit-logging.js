@@ -22,7 +22,7 @@ module.exports = {
       ipAddress: String,
       userAgent: String,
       metadata: mongoose.Schema.Types.Mixed,
-      timestamp: { type: Date, default: Date.now },
+      timestamp: { type: Date, default: Date.now }
     });
 
     AuditLogSchema.index({ action: 1, timestamp: -1 });
@@ -37,5 +37,5 @@ module.exports = {
     // Rollback audit logging
     const mongoose = require('mongoose');
     await mongoose.connection.db.dropCollection('auditlogs');
-  },
+  }
 };

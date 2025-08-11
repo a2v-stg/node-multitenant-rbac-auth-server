@@ -11,13 +11,13 @@ async function testCompleteLoginFlow() {
       'http://localhost:3000/auth/login',
       {
         username: 'test@example.com',
-        password: 'password123',
+        password: 'password123'
       },
       {
         maxRedirects: 0,
         validateStatus(status) {
           return status >= 200 && status < 400; // Accept redirects
-        },
+        }
       }
     );
 
@@ -34,7 +34,7 @@ async function testCompleteLoginFlow() {
       // 3. Create session for MFA verification
       const session = axios.create({
         withCredentials: true,
-        baseURL: 'http://localhost:3000',
+        baseURL: 'http://localhost:3000'
       });
 
       // 4. Check current user status
@@ -56,7 +56,7 @@ async function testCompleteLoginFlow() {
       console.log('\n4. Testing MFA verification...');
       try {
         const mfaVerifyResponse = await session.post('/auth/mfa-verify-login', {
-          token: '123456',
+          token: '123456'
         });
         console.log('✅ MFA verification response:', mfaVerifyResponse.data);
       } catch (error) {
@@ -80,20 +80,20 @@ async function testCompleteLoginFlow() {
       console.log('\n5. Testing tenant selection...');
       const session = axios.create({
         withCredentials: true,
-        baseURL: 'http://localhost:3000',
+        baseURL: 'http://localhost:3000'
       });
 
       try {
         const selectResponse = await session.post(
           '/auth/select-tenant',
           {
-            tenantId: 'default',
+            tenantId: 'default'
           },
           {
             maxRedirects: 0,
             validateStatus(status) {
               return status >= 200 && status < 400; // Accept redirects
-            },
+            }
           }
         );
 

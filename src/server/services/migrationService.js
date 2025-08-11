@@ -19,7 +19,7 @@ class MigrationService {
         this.context = createContext({
           config: {},
           logger: console,
-          mongoose: mongoose,
+          mongoose,
           models: {}
         });
         initContext(this.context);
@@ -32,7 +32,7 @@ class MigrationService {
     if (!this.models) {
       const context = this._getContext();
       this.models = {
-        Migration: context.getModel('Migration'),
+        Migration: context.getModel('Migration')
       };
     }
     return this.models;
@@ -51,7 +51,7 @@ class MigrationService {
       name,
       description,
       up: upFunction,
-      down: downFunction,
+      down: downFunction
     });
   }
 
@@ -117,7 +117,7 @@ class MigrationService {
         version: migration.version,
         name: migration.name,
         description: migration.description,
-        status: 'pending',
+        status: 'pending'
       });
       await migrationRecord.save();
 
@@ -136,7 +136,7 @@ class MigrationService {
       // Update record as failed
       const { Migration } = this._getModels();
       const migrationRecord = await Migration.findOne({
-        version: migration.version,
+        version: migration.version
       });
       if (migrationRecord) {
         migrationRecord.status = 'failed';
@@ -252,7 +252,7 @@ class MigrationService {
       appliedCount: applied.length,
       pendingCount: pending.length,
       applied,
-      pending,
+      pending
     };
   }
 

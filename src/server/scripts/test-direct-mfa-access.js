@@ -11,13 +11,13 @@ async function testDirectMfaAccess() {
       'http://localhost:3000/auth/login',
       {
         username: 'test@example.com',
-        password: 'password123',
+        password: 'password123'
       },
       {
         maxRedirects: 0,
         validateStatus(status) {
           return status >= 200 && status < 400; // Accept redirects
-        },
+        }
       }
     );
 
@@ -27,7 +27,7 @@ async function testDirectMfaAccess() {
     // 2. Create session for subsequent requests
     const session = axios.create({
       withCredentials: true,
-      baseURL: 'http://localhost:3000',
+      baseURL: 'http://localhost:3000'
     });
 
     // 3. Check current user status
@@ -67,7 +67,7 @@ async function testDirectMfaAccess() {
         maxRedirects: 0,
         validateStatus(status) {
           return status >= 200 && status < 400; // Accept redirects
-        },
+        }
       });
       console.log('✅ MFA endpoint response');
       console.log('Status:', mfaResponse.status);

@@ -6,7 +6,7 @@ const requirePermission = permission => {
     try {
       if (!req.user || !req.tenant) {
         return res.status(401).json({
-          error: 'Authentication required',
+          error: 'Authentication required'
         });
       }
 
@@ -19,7 +19,7 @@ const requirePermission = permission => {
       if (!hasPermission) {
         return res.status(403).json({
           error: 'Insufficient permissions',
-          requiredPermission: permission,
+          requiredPermission: permission
         });
       }
 
@@ -27,7 +27,7 @@ const requirePermission = permission => {
     } catch (error) {
       console.error('Permission check middleware error:', error);
       return res.status(500).json({
-        error: 'Permission check failed',
+        error: 'Permission check failed'
       });
     }
   };
@@ -39,7 +39,7 @@ const requireAnyPermission = permissions => {
     try {
       if (!req.user || !req.tenant) {
         return res.status(401).json({
-          error: 'Authentication required',
+          error: 'Authentication required'
         });
       }
 
@@ -52,7 +52,7 @@ const requireAnyPermission = permissions => {
       if (!hasPermission) {
         return res.status(403).json({
           error: 'Insufficient permissions',
-          requiredPermissions: permissions,
+          requiredPermissions: permissions
         });
       }
 
@@ -60,7 +60,7 @@ const requireAnyPermission = permissions => {
     } catch (error) {
       console.error('Permission check middleware error:', error);
       return res.status(500).json({
-        error: 'Permission check failed',
+        error: 'Permission check failed'
       });
     }
   };
@@ -72,7 +72,7 @@ const requireAllPermissions = permissions => {
     try {
       if (!req.user || !req.tenant) {
         return res.status(401).json({
-          error: 'Authentication required',
+          error: 'Authentication required'
         });
       }
 
@@ -85,7 +85,7 @@ const requireAllPermissions = permissions => {
       if (!hasPermission) {
         return res.status(403).json({
           error: 'Insufficient permissions',
-          requiredPermissions: permissions,
+          requiredPermissions: permissions
         });
       }
 
@@ -93,7 +93,7 @@ const requireAllPermissions = permissions => {
     } catch (error) {
       console.error('Permission check middleware error:', error);
       return res.status(500).json({
-        error: 'Permission check failed',
+        error: 'Permission check failed'
       });
     }
   };
@@ -105,7 +105,7 @@ const requireRole = roleName => {
     try {
       if (!req.user || !req.tenant) {
         return res.status(401).json({
-          error: 'Authentication required',
+          error: 'Authentication required'
         });
       }
 
@@ -119,7 +119,7 @@ const requireRole = roleName => {
       if (!hasRole) {
         return res.status(403).json({
           error: 'Insufficient role',
-          requiredRole: roleName,
+          requiredRole: roleName
         });
       }
 
@@ -127,7 +127,7 @@ const requireRole = roleName => {
     } catch (error) {
       console.error('Role check middleware error:', error);
       return res.status(500).json({
-        error: 'Role check failed',
+        error: 'Role check failed'
       });
     }
   };
@@ -160,5 +160,5 @@ module.exports = {
   requireAnyPermission,
   requireAllPermissions,
   requireRole,
-  addUserPermissions,
+  addUserPermissions
 };

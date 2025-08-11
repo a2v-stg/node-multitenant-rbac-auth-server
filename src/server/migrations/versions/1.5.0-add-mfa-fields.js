@@ -21,8 +21,8 @@ module.exports = {
           countryCode: '+1',
           authyId: null,
           totpSecret: null,
-          mfaSetupCompleted: false,
-        },
+          mfaSetupCompleted: false
+        }
       }
     );
 
@@ -45,11 +45,11 @@ module.exports = {
           countryCode: '',
           authyId: '',
           totpSecret: '',
-          mfaSetupCompleted: '',
-        },
+          mfaSetupCompleted: ''
+        }
       }
     );
 
     console.log('MFA fields removed successfully');
-  },
+  }
 };

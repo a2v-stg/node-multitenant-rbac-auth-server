@@ -6,13 +6,13 @@ const validateTenantAccess = async (req, res, next) => {
 
     if (!tenantId) {
       return res.status(400).json({
-        error: 'Tenant ID required',
+        error: 'Tenant ID required'
       });
     }
 
     if (!req.user || !req.user._id) {
       return res.status(401).json({
-        error: 'Authentication required',
+        error: 'Authentication required'
       });
     }
 
@@ -25,7 +25,7 @@ const validateTenantAccess = async (req, res, next) => {
   } catch (error) {
     return res.status(403).json({
       error: 'Unauthorized tenant access',
-      details: error.message,
+      details: error.message
     });
   }
 };
@@ -47,5 +47,5 @@ const ensureTenantSelected = (req, res, next) => {
 
 module.exports = {
   validateTenantAccess,
-  ensureTenantSelected,
+  ensureTenantSelected
 };

@@ -4,7 +4,7 @@ const { validateTenantAccess } = require('../middleware/tenantValidation');
 const {
   requirePermission,
   requireAnyPermission,
-  addUserPermissions,
+  addUserPermissions
 } = require('../middleware/rbacMiddleware');
 const rbacService = require('../services/rbacService');
 const { permissionHelpers } = require('../config/permissions');
@@ -16,7 +16,7 @@ router.get('/permissions', ensureAuthenticated, (req, res) => {
   try {
     const permissions = permissionHelpers.getAllPermissions();
     const categories = permissionHelpers.getPermissionsByCategory();
-    
+
     res.json({
       success: true,
       data: Object.keys(permissions).map(permission => ({
@@ -39,7 +39,7 @@ router.use(addUserPermissions);
 router.get('/roles', requirePermission('roles:read'), async (req, res) => {
   try {
     const roles = await rbacService.getTenantRoles(req.tenant._id);
-    
+
     // Add user count for each role
     const rolesWithUserCount = await Promise.all(
       roles.map(async (role) => {
@@ -67,7 +67,7 @@ router.post('/roles', requirePermission('roles:create'), async (req, res) => {
 
     if (!name || !permissions || !Array.isArray(permissions)) {
       return res.status(400).json({
-        error: 'Name and permissions array are required',
+        error: 'Name and permissions array are required'
       });
     }
 
@@ -75,12 +75,12 @@ router.post('/roles', requirePermission('roles:create'), async (req, res) => {
       name,
       description,
       permissions,
-      parentRole,
+      parentRole
     });
 
-    res.status(201).json({ 
+    res.status(201).json({
       success: true,
-      data: role 
+      data: role
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -152,7 +152,7 @@ router.delete('/roles/:id', requirePermission('roles:delete'), async (req, res) 
 router.get('/users', requirePermission('users:read'), async (req, res) => {
   try {
     const users = await rbacService.getTenantUsers(req.tenant._id);
-    
+
     // Get roles for each user
     const usersWithRoles = await Promise.all(
       users.map(async (user) => {
@@ -179,8 +179,8 @@ router.get('/user/permissions', (req, res) => {
     success: true,
     data: {
       permissions: req.userPermissions,
-      roles: req.userRoles,
-    },
+      roles: req.userRoles
+    }
   });
 });
 

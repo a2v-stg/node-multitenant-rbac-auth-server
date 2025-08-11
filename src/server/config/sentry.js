@@ -24,20 +24,20 @@ function initSentry(options = {}) {
   Sentry.init({
     dsn,
     environment,
-    
+
     // Performance monitoring
     tracesSampleRate: enableTracing ? tracesSampleRate : 0,
-    
+
     // Enable debug mode in development
     debug: environment === 'development',
-    
+
     // Before send hook to filter out certain errors
     beforeSend(event, hint) {
       // Don't send errors in development unless explicitly enabled
       if (environment === 'development' && !process.env.SENTRY_DEBUG) {
         return null;
       }
-      
+
       // Filter out certain error types if needed
       if (event.exception) {
         const exception = event.exception.values[0];
@@ -45,23 +45,23 @@ function initSentry(options = {}) {
           return null;
         }
       }
-      
+
       return event;
     },
-    
+
     // Before send transaction hook
     beforeSendTransaction(event) {
       // Don't send transactions in development unless explicitly enabled
       if (environment === 'development' && !process.env.SENTRY_DEBUG) {
         return null;
       }
-      
+
       return event;
     }
   });
 
   console.log(`✅ Sentry initialized for environment: ${environment}`);
-  
+
   return Sentry;
 }
 
@@ -76,17 +76,17 @@ function createTransaction(name, op = 'default', data = {}) {
   if (!Sentry.getCurrentHub().getClient()) {
     return null;
   }
-  
+
   const transaction = Sentry.startTransaction({
     name,
     op,
     data
   });
-  
+
   Sentry.getCurrentHub().configureScope(scope => {
     scope.setSpan(transaction);
   });
-  
+
   return transaction;
 }
 
@@ -102,7 +102,7 @@ function createSpan(name, op = 'default', data = {}) {
   if (!currentSpan) {
     return null;
   }
-  
+
   return currentSpan.startChild({
     name,
     op,
@@ -120,13 +120,13 @@ function captureError(error, context = {}) {
     console.error('Sentry not initialized, logging error:', error);
     return;
   }
-  
+
   Sentry.withScope(scope => {
     // Add context data
     Object.entries(context).forEach(([key, value]) => {
       scope.setExtra(key, value);
     });
-    
+
     Sentry.captureException(error);
   });
 }
@@ -142,13 +142,13 @@ function captureMessage(message, level = 'info', context = {}) {
     console.log(`Sentry not initialized, logging message: ${message}`);
     return;
   }
-  
+
   Sentry.withScope(scope => {
     // Add context data
     Object.entries(context).forEach(([key, value]) => {
       scope.setExtra(key, value);
     });
-    
+
     Sentry.captureMessage(message, level);
   });
 }
@@ -161,7 +161,7 @@ function setUser(user) {
   if (!Sentry.getCurrentHub().getClient()) {
     return;
   }
-  
+
   Sentry.setUser({
     id: user.id || user._id,
     email: user.email,
@@ -177,7 +177,7 @@ function clearUser() {
   if (!Sentry.getCurrentHub().getClient()) {
     return;
   }
-  
+
   Sentry.setUser(null);
 }
 
@@ -189,7 +189,7 @@ function setTags(tags) {
   if (!Sentry.getCurrentHub().getClient()) {
     return;
   }
-  
+
   Sentry.setTags(tags);
 }
 
@@ -201,7 +201,7 @@ function setExtras(extras) {
   if (!Sentry.getCurrentHub().getClient()) {
     return;
   }
-  
+
   Sentry.setExtras(extras);
 }
 
@@ -216,4 +216,4 @@ module.exports = {
   setTags,
   setExtras,
   Sentry
-}; 
+};

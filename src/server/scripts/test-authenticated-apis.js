@@ -10,7 +10,7 @@ mongoose.connect(
   process.env.MONGODB_URI || 'mongodb://localhost:27017/fde_doc_db',
   {
     useNewUrlParser: true,
-    useUnifiedTopology: true,
+    useUnifiedTopology: true
   }
 );
 
@@ -36,7 +36,7 @@ async function testAuthenticatedAPIs() {
     // Get user roles and permissions
     const userRoles = await UserRole.find({
       user: user._id,
-      tenant: tenant._id,
+      tenant: tenant._id
     }).populate('role');
 
     const userPermissions = userRoles.flatMap(ur => ur.role.permissions || []);
@@ -48,16 +48,16 @@ async function testAuthenticatedAPIs() {
         fullName: user.fullName,
         isActive: user.isActive,
         lastLogin: user.lastLogin,
-        oauthProvider: user.oauthProvider,
+        oauthProvider: user.oauthProvider
       },
       tenant: {
         _id: tenant._id,
         tenantName: tenant.tenantName,
         tenantId: tenant.tenantId,
-        envName: tenant.envName,
+        envName: tenant.envName
       },
       userRoles: userRoles.map(ur => ur.role),
-      userPermissions: [...new Set(userPermissions)], // Remove duplicates
+      userPermissions: [...new Set(userPermissions)] // Remove duplicates
     };
 
     console.log(
@@ -74,7 +74,7 @@ async function testAuthenticatedAPIs() {
     const availableTenants = userTenants.map(ut => ({
       tenantName: ut.tenant.tenantName,
       tenantId: ut.tenant.tenantId,
-      envName: ut.tenant.envName,
+      envName: ut.tenant.envName
     }));
 
     console.log(

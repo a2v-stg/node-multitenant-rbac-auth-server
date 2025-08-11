@@ -19,8 +19,8 @@ module.exports = {
         $set: {
           settings: {},
           features: [],
-          isActive: true,
-        },
+          isActive: true
+        }
       }
     );
   },
@@ -35,9 +35,9 @@ module.exports = {
         $unset: {
           settings: 1,
           features: 1,
-          isActive: 1,
-        },
+          isActive: 1
+        }
       }
     );
-  },
+  }
 };

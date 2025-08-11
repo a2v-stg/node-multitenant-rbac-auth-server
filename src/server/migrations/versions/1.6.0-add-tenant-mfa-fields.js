@@ -18,8 +18,8 @@ module.exports = {
             mfaEnabled: false,
             mfaRequiredForLocalUsers: false,
             mfaMethods: ['totp'],
-            mfaGracePeriod: 0,
-          },
+            mfaGracePeriod: 0
+          }
         }
       );
 
@@ -47,8 +47,8 @@ module.exports = {
             mfaEnabled: '',
             mfaRequiredForLocalUsers: '',
             mfaMethods: '',
-            mfaGracePeriod: '',
-          },
+            mfaGracePeriod: ''
+          }
         }
       );
 
@@ -57,5 +57,5 @@ module.exports = {
       console.error('❌ Error removing MFA fields from tenants:', error);
       throw error;
     }
-  },
+  }
 };

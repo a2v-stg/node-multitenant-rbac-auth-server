@@ -8,7 +8,7 @@ mongoose.connect(
   process.env.MONGODB_URI || 'mongodb://localhost:27017/admin-ui',
   {
     useNewUrlParser: true,
-    useUnifiedTopology: true,
+    useUnifiedTopology: true
   }
 );
 
@@ -25,7 +25,7 @@ async function testMultipleTenantFlow() {
       envName: 'production',
       mfaEnabled: true,
       mfaRequiredForLocalUsers: true,
-      mfaMethods: ['totp', 'sms'],
+      mfaMethods: ['totp', 'sms']
     });
     await tenant1.save();
     console.log('✅ Production tenant created:', tenant1.tenantName);
@@ -36,7 +36,7 @@ async function testMultipleTenantFlow() {
       envName: 'development',
       mfaEnabled: false,
       mfaRequiredForLocalUsers: false,
-      mfaMethods: ['totp'],
+      mfaMethods: ['totp']
     });
     await tenant2.save();
     console.log('✅ Development tenant created:', tenant2.tenantName);
@@ -47,7 +47,7 @@ async function testMultipleTenantFlow() {
       email: 'multitenant@example.com',
       name: 'Multi Tenant User',
       oauthProvider: 'local',
-      isActive: true,
+      isActive: true
     });
     await testUser.save();
     console.log('✅ Test user created:', testUser.email);
@@ -57,14 +57,14 @@ async function testMultipleTenantFlow() {
 
     const userTenant1 = new UserTenant({
       user: testUser._id,
-      tenant: tenant1._id,
+      tenant: tenant1._id
     });
     await userTenant1.save();
     console.log('✅ User assigned to Production tenant');
 
     const userTenant2 = new UserTenant({
       user: testUser._id,
-      tenant: tenant2._id,
+      tenant: tenant2._id
     });
     await userTenant2.save();
     console.log('✅ User assigned to Development tenant');

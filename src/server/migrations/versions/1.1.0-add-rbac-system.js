@@ -33,14 +33,14 @@ module.exports = {
         // Check if user already has roles
         const existingRoles = await UserRole.find({
           user: userTenant.user,
-          tenant: tenant._id,
+          tenant: tenant._id
         });
 
         if (existingRoles.length === 0) {
           // Assign default 'User' role
           const defaultRole = await Role.findOne({
             tenant: tenant._id,
-            name: 'User',
+            name: 'User'
           });
 
           if (defaultRole) {
@@ -62,5 +62,5 @@ module.exports = {
 
     await UserRole.deleteMany({});
     await Role.deleteMany({});
-  },
+  }
 };

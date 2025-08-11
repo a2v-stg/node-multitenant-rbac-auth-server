@@ -5,33 +5,33 @@ const UserRoleSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: true
     },
     tenant: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'tenants',
-      required: true,
+      required: true
     },
     role: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Role',
-      required: true,
+      required: true
     },
     assignedBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'User'
     },
     isActive: {
       type: Boolean,
-      default: true,
+      default: true
     },
     expiresAt: {
       type: Date,
-      default: null,
-    },
+      default: null
+    }
   },
   {
-    timestamps: true,
+    timestamps: true
   }
 );
 

@@ -6,16 +6,16 @@ const UserTenantSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: true
     },
     tenant: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Tenant',
-      required: true,
-    },
+      required: true
+    }
   },
   {
-    timestamps: true,
+    timestamps: true
   }
 );
 

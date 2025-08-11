@@ -178,4 +178,4 @@ organizationSchema.statics.createDefault = function() {
   });
 };
 
-module.exports = mongoose.model('Organization', organizationSchema); 
+module.exports = mongoose.model('Organization', organizationSchema);

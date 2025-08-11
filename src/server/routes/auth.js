@@ -9,10 +9,10 @@ router.post('/login', async (req, res, next) => {
   const context = getContext();
   const logger = context.getLogger();
   const passport = require('passport');
-  
+
   // Import middleware with context
   const { validateLogin, sanitizeInput } = require('../middleware/validation');
-  
+
   // Apply middleware
   sanitizeInput(req, res, () => {
     // Apply validation middleware
@@ -21,12 +21,12 @@ router.post('/login', async (req, res, next) => {
       const errors = require('express-validator').validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({
-          errors: errors.array(),
+          errors: errors.array()
         });
       }
       next();
     };
-    
+
     // Execute validation chain
     let currentIndex = 0;
     const executeValidation = () => {
@@ -58,7 +58,7 @@ router.post('/login', async (req, res, next) => {
               logger.auth('Session authenticated:', req.isAuthenticated());
               logger.auth('Session user:', req.user?.email);
               logger.auth('Session passport user:', req.session.passport?.user);
-              
+
               try {
                 const authService = require('../services/authService');
                 const result = await authService.handleUserLogin(user);
@@ -68,7 +68,7 @@ router.post('/login', async (req, res, next) => {
                   // Store user info in session for MFA setup
                   req.session.mfaSetupUser = {
                     id: user._id,
-                    email: user.email,
+                    email: user.email
                     // tenantId: result.tenant.tenantId
                   };
                   logger.mfa('Returning MFA setup redirect');
@@ -78,7 +78,7 @@ router.post('/login', async (req, res, next) => {
                   req.session.mfaUser = {
                     id: user._id,
                     email: user.email,
-                    mfaMethod: user.mfaMethod,
+                    mfaMethod: user.mfaMethod
                   };
                   logger.mfa('Returning MFA verification redirect');
                   res.json({ redirectUrl: 'http://localhost:3001/mfa?mfa=true' });
@@ -104,7 +104,7 @@ router.post('/login', async (req, res, next) => {
         });
       }
     };
-    
+
     executeValidation();
   });
 });
@@ -132,7 +132,7 @@ router.post('/mfa/setup', async (req, res) => {
     // Update user with MFA configuration
     const mfaService = require('../services/mfaService');
     const result = await mfaService.setupMFA(mfaSetupUser.id, method, phoneNumber, countryCode);
-    
+
     if (result.success) {
       // Clear MFA setup session
       delete req.session.mfaSetupUser;
@@ -174,10 +174,10 @@ router.post('/mfa/enable', async (req, res) => {
 
     // Setup MFA
     const user = await authService.setupMfaForUser(req.user._id, method);
-    
+
     logger.mfa('MFA enabled for user:', req.user.email, 'Method:', method);
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       message: 'MFA enabled successfully',
       user: {
         mfaMethod: user.mfaMethod,
@@ -220,8 +220,8 @@ router.post('/mfa/disable', async (req, res) => {
     await user.save();
 
     logger.mfa('MFA disabled for user:', req.user.email);
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       message: 'MFA disabled successfully',
       user: {
         mfaMethod: user.mfaMethod,
@@ -248,7 +248,7 @@ router.get(
   (req, res, next) => {
     const passport = require('passport');
     passport.authenticate('oauth2', {
-      failureRedirect: 'http://localhost:3001/login',
+      failureRedirect: 'http://localhost:3001/login'
     })(req, res, next);
   },
   async (req, res) => {
@@ -256,7 +256,7 @@ router.get(
       const context = getContext();
       const logger = context.getLogger();
       const authService = require('../services/authService');
-      
+
       const result = await authService.handleUserLogin(req.user);
       logger.auth('OAuth callback result:', result);
 
@@ -265,7 +265,7 @@ router.get(
         req.session.mfaSetupUser = {
           id: req.user._id,
           email: req.user.email,
-          tenantId: result.tenant.tenantId,
+          tenantId: result.tenant.tenantId
         };
         logger.mfa('Redirecting to MFA setup');
         res.redirect('http://localhost:3001/mfa-setup');
@@ -274,7 +274,7 @@ router.get(
         req.session.mfaUser = {
           id: req.user._id,
           email: req.user.email,
-          mfaMethod: req.user.mfaMethod,
+          mfaMethod: req.user.mfaMethod
         };
         logger.mfa('Redirecting to MFA');
         res.redirect('http://localhost:3001/mfa?mfa=true');
@@ -316,44 +316,44 @@ router.post('/mfa-send-verification', async (req, res) => {
     let result;
 
     switch (mode) {
-      case 'sms':
-        if (req.user.phoneNumber) {
-          result = await mfaService.sendSmsVerification(
-            req.user.phoneNumber,
-            req.user.countryCode || '+1'
-          );
-        } else {
-          return res
-            .status(400)
-            .json({ error: 'Phone number not configured for user' });
-        }
-        break;
+    case 'sms':
+      if (req.user.phoneNumber) {
+        result = await mfaService.sendSmsVerification(
+          req.user.phoneNumber,
+          req.user.countryCode || '+1'
+        );
+      } else {
+        return res
+          .status(400)
+          .json({ error: 'Phone number not configured for user' });
+      }
+      break;
 
-      case 'voice':
-        if (req.user.phoneNumber) {
-          result = await mfaService.sendVoiceVerification(
-            req.user.phoneNumber,
-            req.user.countryCode || '+1'
-          );
-        } else {
-          return res
-            .status(400)
-            .json({ error: 'Phone number not configured for user' });
-        }
-        break;
+    case 'voice':
+      if (req.user.phoneNumber) {
+        result = await mfaService.sendVoiceVerification(
+          req.user.phoneNumber,
+          req.user.countryCode || '+1'
+        );
+      } else {
+        return res
+          .status(400)
+          .json({ error: 'Phone number not configured for user' });
+      }
+      break;
 
-      case 'email':
-        if (req.user.email) {
-          result = await mfaService.sendEmailVerification(req.user.email);
-        } else {
-          return res
-            .status(400)
-            .json({ error: 'Email not configured for user' });
-        }
-        break;
+    case 'email':
+      if (req.user.email) {
+        result = await mfaService.sendEmailVerification(req.user.email);
+      } else {
+        return res
+          .status(400)
+          .json({ error: 'Email not configured for user' });
+      }
+      break;
 
-      default:
-        return res.status(400).json({ error: 'Invalid verification mode' });
+    default:
+      return res.status(400).json({ error: 'Invalid verification mode' });
     }
 
     res.status(200).json(result);
@@ -380,45 +380,45 @@ router.post('/mfa-verify-token', async (req, res) => {
     let result;
 
     switch (mode) {
-      case 'sms':
-      case 'voice':
-        if (req.user.phoneNumber) {
-          result = await mfaService.verifyTwilioToken(
-            req.user.phoneNumber,
-            token,
-            req.user.countryCode || '+1'
-          );
-        } else {
-          return res
-            .status(400)
-            .json({ error: 'Phone number not configured for user' });
-        }
-        break;
+    case 'sms':
+    case 'voice':
+      if (req.user.phoneNumber) {
+        result = await mfaService.verifyTwilioToken(
+          req.user.phoneNumber,
+          token,
+          req.user.countryCode || '+1'
+        );
+      } else {
+        return res
+          .status(400)
+          .json({ error: 'Phone number not configured for user' });
+      }
+      break;
 
-      case 'email':
-        if (req.user.email) {
-          result = await mfaService.verifyEmailToken(req.user.email, token);
-        } else {
-          return res
-            .status(400)
-            .json({ error: 'Email not configured for user' });
-        }
-        break;
+    case 'email':
+      if (req.user.email) {
+        result = await mfaService.verifyEmailToken(req.user.email, token);
+      } else {
+        return res
+          .status(400)
+          .json({ error: 'Email not configured for user' });
+      }
+      break;
 
-      case 'totp':
-        if (req.user.totpSecret) {
-          result = {
-            success: mfaService.verifyTotpToken(req.user.totpSecret, token),
-          };
-        } else {
-          return res
-            .status(400)
-            .json({ error: 'TOTP secret not configured for user' });
-        }
-        break;
+    case 'totp':
+      if (req.user.totpSecret) {
+        result = {
+          success: mfaService.verifyTotpToken(req.user.totpSecret, token)
+        };
+      } else {
+        return res
+          .status(400)
+          .json({ error: 'TOTP secret not configured for user' });
+      }
+      break;
 
-      default:
-        return res.status(400).json({ error: 'Invalid verification mode' });
+    default:
+      return res.status(400).json({ error: 'Invalid verification mode' });
     }
 
     res.status(200).json({ validated: result.success });
@@ -477,7 +477,7 @@ router.post('/mfa-setup-totp', async (req, res) => {
     res.status(200).json({
       secret: secret.base32,
       qrCode,
-      otpauthUrl: secret.otpauth_url,
+      otpauthUrl: secret.otpauth_url
     });
   } catch (error) {
     logger.mfaError('TOTP setup error:', error);
@@ -553,12 +553,12 @@ router.post('/mfa-verify-login', async (req, res) => {
     if (result.type === 'single') {
       res.json({
         success: true,
-        redirectUrl: result.redirectUrl,
+        redirectUrl: result.redirectUrl
       });
     } else {
       res.json({
         success: true,
-        redirectUrl: 'http://localhost:3001/tenant-selection',
+        redirectUrl: 'http://localhost:3001/tenant-selection'
       });
     }
   } catch (error) {
@@ -640,7 +640,7 @@ router.post('/organization/mfa/methods', async (req, res) => {
   } catch (error) {
     logger.error('Update organization MFA methods error:', error);
     res.status(500).json({
-      error: error.message || 'Failed to update organization MFA methods',
+      error: error.message || 'Failed to update organization MFA methods'
     });
   }
 });
@@ -667,12 +667,12 @@ router.post('/organization/mfa/grace-period', async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Organization MFA grace period updated',
+      message: 'Organization MFA grace period updated'
     });
   } catch (error) {
     logger.error('Update organization MFA grace period error:', error);
     res.status(500).json({
-      error: error.message || 'Failed to update organization MFA grace period',
+      error: error.message || 'Failed to update organization MFA grace period'
     });
   }
 });
@@ -692,7 +692,7 @@ router.get('/organization/mfa/config', async (req, res) => {
   } catch (error) {
     logger.error('Get organization MFA config error:', error);
     res.status(500).json({
-      error: error.message || 'Failed to get organization MFA config',
+      error: error.message || 'Failed to get organization MFA config'
     });
   }
 });
@@ -777,7 +777,7 @@ router.get('/check-user', async (req, res) => {
     );
     const tenants = userTenants.map(ut => ({
       name: ut.tenant.tenantName,
-      tenantId: ut.tenant.tenantId,
+      tenantId: ut.tenant.tenantId
     }));
     res.json({ exists: true, tenants });
   } catch (error) {
@@ -806,7 +806,7 @@ router.get('/test-vue-dashboard', (req, res) => {
     tenant: { tenantName: 'test-tenant', tenantId: 'test-123' },
     user: { email: 'test@example.com', name: 'Test User' },
     userRoles: [{ name: 'User' }],
-    userPermissions: ['read'],
+    userPermissions: ['read']
   });
 });
 
@@ -815,7 +815,7 @@ router.get('/test-api', (req, res) => {
   logger.api('Test API endpoint called');
   res.json({
     message: 'API proxy is working!',
-    timestamp: new Date().toISOString(),
+    timestamp: new Date().toISOString()
   });
 });
 
@@ -827,7 +827,7 @@ router.get('/oauth-config', (req, res) => {
   const config = {
     oauthEnabled: !!process.env.OAUTH_CLIENT_ID,
     oauthUrl: '/auth/oauth',
-    provider: process.env.OAUTH_PROVIDER || 'SSO',
+    provider: process.env.OAUTH_PROVIDER || 'SSO'
   };
   logger.api('Sending OAuth config:', config);
   res.json(config);
@@ -856,7 +856,7 @@ router.get('/current-user', async (req, res) => {
     // If no tenant in session, get the first available tenant for user
     if (!tenant) {
       const userTenant = await UserTenant.findOne({
-        user: req.user._id,
+        user: req.user._id
       }).populate('tenant');
       if (userTenant) {
         tenant = userTenant.tenant;
@@ -893,7 +893,7 @@ router.get('/current-user', async (req, res) => {
             totpSecret: req.user.totpSecret ? true : false,
             mfaMethod: req.user.mfaMethod,
             mfaSetupCompleted: req.user.mfaSetupCompleted,
-            oauthProvider: req.user.oauthProvider,
+            oauthProvider: req.user.oauthProvider
           },
           tenant: {
             id: tenant._id,
@@ -902,11 +902,11 @@ router.get('/current-user', async (req, res) => {
             envName: tenant.envName,
             mfaEnabled: tenant.mfaEnabled,
             mfaRequiredForLocalUsers: tenant.mfaRequiredForLocalUsers,
-            mfaMethods: tenant.mfaMethods,
+            mfaMethods: tenant.mfaMethods
           },
           userRoles,
           userPermissions,
-          availableMfaMethods,
+          availableMfaMethods
         });
       } catch (error) {
         console.error('Tenant access validation failed:', error);
@@ -946,7 +946,7 @@ router.get('/me', async (req, res) => {
     // If no tenant in session, get the first available tenant for user
     if (!tenant) {
       const userTenant = await UserTenant.findOne({
-        user: req.user._id,
+        user: req.user._id
       }).populate('tenant');
       if (userTenant) {
         tenant = userTenant.tenant;
@@ -988,7 +988,7 @@ router.get('/me', async (req, res) => {
             mfaSetupCompleted: req.user.mfaSetupCompleted,
             oauthProvider: req.user.oauthProvider,
             permissions: userPermissions,
-            roles: userRoles,
+            roles: userRoles
           },
           tenant: {
             id: tenant._id,
@@ -997,11 +997,11 @@ router.get('/me', async (req, res) => {
             envName: tenant.envName,
             mfaEnabled: tenant.mfaEnabled,
             mfaRequiredForLocalUsers: tenant.mfaRequiredForLocalUsers,
-            mfaMethods: tenant.mfaMethods,
+            mfaMethods: tenant.mfaMethods
           },
           userRoles,
           userPermissions,
-          availableMfaMethods,
+          availableMfaMethods
         });
       } catch (error) {
         console.error('Tenant access validation failed:', error);
@@ -1026,7 +1026,7 @@ router.post(
     const logger = context.getLogger();
     const { validateTenantSelection, sanitizeInput } = require('../middleware/validation');
     const authService = require('../services/authService');
-    
+
     // Apply middleware
     sanitizeInput(req, res, () => {
       // Apply validation middleware
@@ -1035,12 +1035,12 @@ router.post(
         const errors = require('express-validator').validationResult(req);
         if (!errors.isEmpty()) {
           return res.status(400).json({
-            errors: errors.array(),
+            errors: errors.array()
           });
         }
         next();
       };
-      
+
       // Execute validation chain
       let currentIndex = 0;
       const executeValidation = () => {
@@ -1055,7 +1055,7 @@ router.post(
               sessionId: req.sessionID,
               authenticated: req.isAuthenticated(),
               user: req.user?.email,
-              sessionData: Object.keys(req.session),
+              sessionData: Object.keys(req.session)
             });
 
             // Check if user is authenticated
@@ -1074,7 +1074,7 @@ router.post(
                 req.session.mfaSetupUser = {
                   id: req.user._id,
                   email: req.user.email,
-                  tenantId: result.tenant.tenantId,
+                  tenantId: result.tenant.tenantId
                 };
                 logger.mfa('Redirecting to MFA setup after tenant selection');
                 res.redirect('http://localhost:3001/mfa-setup');
@@ -1083,7 +1083,7 @@ router.post(
                 req.session.mfaUser = {
                   id: req.user._id,
                   email: req.user.email,
-                  mfaMethod: req.user.mfaMethod,
+                  mfaMethod: req.user.mfaMethod
                 };
                 logger.mfa('Redirecting to MFA verification after tenant selection');
                 res.redirect('http://localhost:3001/mfa');
@@ -1103,7 +1103,7 @@ router.post(
           });
         }
       };
-      
+
       executeValidation();
     });
   }
@@ -1129,7 +1129,7 @@ router.get('/available-tenants', async (req, res) => {
       envName: ut.tenant.envName,
       mfaEnabled: ut.tenant.mfaEnabled,
       mfaRequiredForLocalUsers: ut.tenant.mfaRequiredForLocalUsers,
-      mfaMethods: ut.tenant.mfaMethods,
+      mfaMethods: ut.tenant.mfaMethods
     }));
 
     res.json({ tenants });
@@ -1153,7 +1153,7 @@ router.post('/switch-tenant', async (req, res) => {
     const context = getContext();
     const logger = context.getLogger();
     const { sanitizeInput } = require('../middleware/validation');
-    
+
     sanitizeInput(req, res, async () => {
       const { tenant } = req.body;
 

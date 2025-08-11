@@ -2,12 +2,12 @@ module.exports = {
   env: {
     node: true,
     es2021: true,
-    commonjs: true,
+    commonjs: true
   },
   extends: ['eslint:recommended', 'eslint-config-prettier'],
   parserOptions: {
     ecmaVersion: 2021,
-    sourceType: 'module',
+    sourceType: 'module'
   },
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
@@ -28,7 +28,7 @@ module.exports = {
     indent: ['warn', 2],
     'no-multiple-empty-lines': ['warn', { max: 2 }],
     'no-empty': 'warn',
-    'no-unreachable': 'error',
+    'no-unreachable': 'error'
   },
   globals: {
     process: 'readonly',
@@ -43,6 +43,6 @@ module.exports = {
     setTimeout: 'readonly',
     clearTimeout: 'readonly',
     setInterval: 'readonly',
-    clearInterval: 'readonly',
-  },
+    clearInterval: 'readonly'
+  }
 };

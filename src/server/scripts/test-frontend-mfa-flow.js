@@ -11,13 +11,13 @@ async function testFrontendMfaFlow() {
       'http://localhost:3000/auth/login',
       {
         username: 'test@example.com',
-        password: 'password123',
+        password: 'password123'
       },
       {
         maxRedirects: 0,
         validateStatus(status) {
           return status >= 200 && status < 400; // Accept redirects
-        },
+        }
       }
     );
 
@@ -27,7 +27,7 @@ async function testFrontendMfaFlow() {
     // 2. Create session for subsequent requests
     const session = axios.create({
       withCredentials: true,
-      baseURL: 'http://localhost:3000',
+      baseURL: 'http://localhost:3000'
     });
 
     // 3. Check current user status
@@ -66,7 +66,7 @@ async function testFrontendMfaFlow() {
         '/auth/mfa-verify-totp-setup',
         {
           secret: 'TEST_SECRET_123456789',
-          token: '123456',
+          token: '123456'
         }
       );
       console.log('✅ TOTP verification response:', totpVerifyResponse.data);
@@ -81,7 +81,7 @@ async function testFrontendMfaFlow() {
       const smsSetupResponse = await session.post('/auth/mfa/setup', {
         method: 'sms',
         phoneNumber: '+1234567890',
-        countryCode: '+1',
+        countryCode: '+1'
       });
       console.log('✅ SMS MFA setup response:', smsSetupResponse.data);
     } catch (error) {

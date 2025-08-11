@@ -6,37 +6,37 @@ jest.mock('log4js', () => {
     info: jest.fn(),
     error: jest.fn(),
     warn: jest.fn(),
-    debug: jest.fn(),
+    debug: jest.fn()
   };
 
   const mockAuthLogger = {
     info: jest.fn(),
-    error: jest.fn(),
+    error: jest.fn()
   };
 
   const mockMfaLogger = {
     info: jest.fn(),
-    error: jest.fn(),
+    error: jest.fn()
   };
 
   const mockErrorLogger = {
-    error: jest.fn(),
+    error: jest.fn()
   };
 
   return {
     configure: jest.fn(),
     getLogger: jest.fn((category) => {
       switch (category) {
-        case 'error':
-          return mockErrorLogger;
-        case 'auth':
-          return mockAuthLogger;
-        case 'mfa':
-          return mockMfaLogger;
-        default:
-          return mockLogger;
+      case 'error':
+        return mockErrorLogger;
+      case 'auth':
+        return mockAuthLogger;
+      case 'mfa':
+        return mockMfaLogger;
+      default:
+        return mockLogger;
       }
-    }),
+    })
   };
 });
 
@@ -92,7 +92,7 @@ describe('Logger', () => {
     it('should accept message and optional meta parameter', () => {
       // Test that methods can be called with just a message
       expect(() => logger.info('Simple message')).not.toThrow();
-      
+
       // Test that methods can be called with message and meta
       expect(() => logger.info('Message with meta', { key: 'value' })).not.toThrow();
     });
@@ -122,4 +122,4 @@ describe('Logger', () => {
       expect(mockLogger.info).toHaveBeenCalledWith('Test message');
     });
   });
-}); 
+});

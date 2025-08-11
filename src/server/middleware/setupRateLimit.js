@@ -1,11 +1,11 @@
-const { 
-  generalLimiter, 
-  authLimiter, 
-  apiLimiter, 
-  uploadLimiter, 
-  mfaLimiter, 
+const {
+  generalLimiter,
+  authLimiter,
+  apiLimiter,
+  uploadLimiter,
+  mfaLimiter,
   adminLimiter,
-  speedLimiter 
+  speedLimiter
 } = require('./rateLimit');
 
 const routeRateLimit = require('./routeRateLimit');
@@ -29,27 +29,27 @@ const setupRateLimit = (app) => {
   // Apply specific rate limiting to different route groups
   app.use('/auth', authLimiter);
   app.use('/api/auth', authLimiter);
-  
+
   app.use('/api', apiLimiter);
-  
+
   // Apply stricter rate limiting to sensitive routes
   app.use('/api/users', apiLimiter);
   app.use('/api/tenant', apiLimiter);
   app.use('/api/rbac', apiLimiter);
   app.use('/api/settings', apiLimiter);
   app.use('/api/blacklist', apiLimiter);
-  
+
   // Apply admin rate limiting
   app.use('/t/:tenantId/rbac', adminLimiter);
-  
+
   // Apply MFA rate limiting
   app.use('/mfa', mfaLimiter);
   app.use('/totp', mfaLimiter);
-  
+
   // Apply upload rate limiting (if you have file upload routes)
   // app.use('/upload', uploadLimiter);
   // app.use('/api/upload', uploadLimiter);
-  
+
   console.log('✅ Rate limiting middleware configured successfully');
 };
 
@@ -60,14 +60,14 @@ const setupRouteSpecificRateLimit = (app) => {
   // Example: Apply different rate limits to different API versions
   app.use('/api/v1', apiLimiter);
   app.use('/api/v2', apiLimiter);
-  
+
   // Example: Apply stricter rate limiting to admin routes
   app.use('/admin', adminLimiter);
-  
+
   // Example: Apply role-based rate limiting
   // app.use('/api/admin', routeRateLimit.roleBased('admin'));
   // app.use('/api/tenant', routeRateLimit.roleBased('tenantadmin'));
-  
+
   console.log('✅ Route-specific rate limiting configured successfully');
 };
 
@@ -76,7 +76,7 @@ const setupRouteSpecificRateLimit = (app) => {
  */
 const setupEnvironmentSpecificRateLimit = (app) => {
   const env = process.env.NODE_ENV || 'development';
-  
+
   if (env === 'production') {
     // Stricter rate limiting in production
     app.use('/api', require('express-rate-limit')({
@@ -86,7 +86,7 @@ const setupEnvironmentSpecificRateLimit = (app) => {
       standardHeaders: true,
       legacyHeaders: false
     }));
-    
+
     console.log('✅ Production rate limiting configured');
   } else if (env === 'staging') {
     // Moderate rate limiting in staging
@@ -97,7 +97,7 @@ const setupEnvironmentSpecificRateLimit = (app) => {
       standardHeaders: true,
       legacyHeaders: false
     }));
-    
+
     console.log('✅ Staging rate limiting configured');
   } else {
     // More lenient rate limiting in development
@@ -108,7 +108,7 @@ const setupEnvironmentSpecificRateLimit = (app) => {
       standardHeaders: true,
       legacyHeaders: false
     }));
-    
+
     console.log('✅ Development rate limiting configured');
   }
 };
@@ -124,21 +124,21 @@ const setupRateLimitWithMonitoring = (app) => {
       const remaining = req.rateLimit.remaining;
       const limit = req.rateLimit.limit;
       const resetTime = req.rateLimit.resetTime;
-      
+
       // Log when rate limit is getting low
       if (remaining < limit * 0.2) { // Less than 20% remaining
         console.warn(`Rate limit warning for IP ${req.ip}: ${remaining}/${limit} requests remaining`);
       }
-      
+
       // Add rate limit headers for debugging
       res.set('X-RateLimit-Remaining', remaining);
       res.set('X-RateLimit-Limit', limit);
       res.set('X-RateLimit-Reset', resetTime);
     }
-    
+
     next();
   });
-  
+
   console.log('✅ Rate limiting monitoring configured');
 };
 
@@ -149,16 +149,16 @@ const setupAllRateLimiting = (app) => {
   try {
     // Setup basic rate limiting
     setupRateLimit(app);
-    
+
     // Setup environment-specific rate limiting
     setupEnvironmentSpecificRateLimit(app);
-    
+
     // Setup route-specific rate limiting
     setupRouteSpecificRateLimit(app);
-    
+
     // Setup monitoring
     setupRateLimitWithMonitoring(app);
-    
+
     console.log('✅ All rate limiting configured successfully');
   } catch (error) {
     console.error('❌ Failed to setup rate limiting:', error);
@@ -172,4 +172,4 @@ module.exports = {
   setupEnvironmentSpecificRateLimit,
   setupRateLimitWithMonitoring,
   setupAllRateLimiting
-}; 
+};

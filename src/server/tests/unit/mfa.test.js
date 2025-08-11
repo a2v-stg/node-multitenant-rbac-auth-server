@@ -3,7 +3,7 @@ const {
   it,
   expect,
   beforeEach,
-  afterEach,
+  afterEach
 } = require('@jest/globals');
 const axios = require('axios');
 
@@ -28,7 +28,7 @@ describe('MFA Functionality', () => {
       expect(mockAxios).not.toHaveBeenCalledWith(
         '/auth/mfa-send-verification',
         expect.objectContaining({
-          mode: 'totp',
+          mode: 'totp'
         })
       );
     });
@@ -40,7 +40,7 @@ describe('MFA Functionality', () => {
       // Test TOTP token validation
       const response = await axios.post('/auth/mfa-verify-token', {
         token: '123456',
-        mode: 'totp',
+        mode: 'totp'
       });
 
       expect(response.data.validated).toBe(true);
@@ -53,7 +53,7 @@ describe('MFA Functionality', () => {
       axios.post.mockResolvedValue(mockResponse);
 
       const response = await axios.post('/auth/organization/mfa/enable', {
-        methods: ['totp'],
+        methods: ['totp']
       });
 
       expect(response.data.success).toBe(true);
@@ -64,7 +64,7 @@ describe('MFA Functionality', () => {
         enabled: true,
         requiredForLocalUsers: true,
         methods: ['totp'],
-        gracePeriod: 7,
+        gracePeriod: 7
       };
       axios.get.mockResolvedValue({ status: 200, data: mockConfig });
 

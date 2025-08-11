@@ -7,4 +7,4 @@ module.exports = {
   rateLimit: require('./rateLimit'),
   routeRateLimit: require('./routeRateLimit'),
   setupRateLimit: require('./setupRateLimit')
-}; 
+};

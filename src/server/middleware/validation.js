@@ -12,11 +12,11 @@ const validateLogin = [
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
-        errors: errors.array(),
+        errors: errors.array()
       });
     }
     next();
-  },
+  }
 ];
 
 const validateTenantSelection = [
@@ -29,11 +29,11 @@ const validateTenantSelection = [
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
-        errors: errors.array(),
+        errors: errors.array()
       });
     }
     next();
-  },
+  }
 ];
 
 const sanitizeInput = (req, res, next) => {
@@ -51,5 +51,5 @@ const sanitizeInput = (req, res, next) => {
 module.exports = {
   validateLogin,
   validateTenantSelection,
-  sanitizeInput,
+  sanitizeInput
 };

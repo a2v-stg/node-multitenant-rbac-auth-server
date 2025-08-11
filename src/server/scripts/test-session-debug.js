@@ -8,14 +8,14 @@ async function testSessionDebug() {
     // Create axios instance with credentials
     const session = axios.create({
       withCredentials: true,
-      baseURL: 'http://localhost:3000',
+      baseURL: 'http://localhost:3000'
     });
 
     // 1. Test login to get session
     console.log('1. Logging in to get session...');
     const loginResponse = await session.post('/auth/login', {
       username: 'test@example.com',
-      password: 'password123',
+      password: 'password123'
     });
 
     console.log('✅ Login successful, status:', loginResponse.status);
@@ -42,8 +42,8 @@ async function testSessionDebug() {
       withCredentials: true,
       baseURL: 'http://localhost:3000',
       headers: {
-        Cookie: session.defaults.headers.Cookie || '',
-      },
+        Cookie: session.defaults.headers.Cookie || ''
+      }
     });
 
     try {

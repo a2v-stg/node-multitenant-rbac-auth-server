@@ -5,39 +5,39 @@ const RoleSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      trim: true,
+      trim: true
     },
     tenant: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'tenants',
-      required: true,
+      required: true
     },
     description: {
       type: String,
-      trim: true,
+      trim: true
     },
     permissions: [
       {
         type: String,
-        trim: true,
-      },
+        trim: true
+      }
     ],
     parentRole: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Role',
-      default: null,
+      default: null
     },
     isSystem: {
       type: Boolean,
-      default: false,
+      default: false
     },
     isActive: {
       type: Boolean,
-      default: true,
-    },
+      default: true
+    }
   },
   {
-    timestamps: true,
+    timestamps: true
   }
 );
 

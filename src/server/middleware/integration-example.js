@@ -11,7 +11,7 @@ const { routeRateLimit } = require('./routeRateLimit');
 function basicIntegration(app) {
   // This will apply rate limiting to all routes
   setupAllRateLimiting(app);
-  
+
   console.log('✅ Basic rate limiting integration complete');
 }
 
@@ -22,18 +22,18 @@ function basicIntegration(app) {
 function selectiveIntegration(app) {
   // Apply general rate limiting
   app.use(require('./rateLimit').generalLimiter);
-  
+
   // Apply to authentication routes only
   app.use('/auth', routeRateLimit.auth);
   app.use('/api/auth', routeRateLimit.auth);
-  
+
   // Apply to API routes only
   app.use('/api', routeRateLimit.api);
-  
+
   // Apply to admin routes only
   app.use('/admin', routeRateLimit.admin);
   app.use('/api/rbac', routeRateLimit.admin);
-  
+
   console.log('✅ Selective rate limiting integration complete');
 }
 
@@ -46,26 +46,26 @@ function routeByRouteIntegration(app) {
   app.use('/auth/login', routeRateLimit.auth);
   app.use('/auth/register', routeRateLimit.auth);
   app.use('/auth/forgot-password', routeRateLimit.auth);
-  
+
   // MFA routes - very strict limits
   app.use('/mfa/setup', routeRateLimit.mfa);
   app.use('/mfa/verify', routeRateLimit.mfa);
   app.use('/totp/setup', routeRateLimit.mfa);
   app.use('/totp/verify', routeRateLimit.mfa);
-  
+
   // User management - moderate limits
   app.use('/api/users', routeRateLimit.api);
   app.use('/api/tenant', routeRateLimit.api);
-  
+
   // Admin operations - strict limits
   app.use('/api/rbac', routeRateLimit.admin);
   app.use('/api/settings', routeRateLimit.admin);
   app.use('/api/blacklist', routeRateLimit.admin);
-  
+
   // File operations - upload limits
   // app.use('/api/upload', routeRateLimit.upload);
   // app.use('/api/documents', routeRateLimit.upload);
-  
+
   console.log('✅ Route-by-route rate limiting integration complete');
 }
 
@@ -78,7 +78,7 @@ function roleBasedIntegration(app) {
   app.use('/api/admin', routeRateLimit.roleBased('admin'));
   app.use('/api/tenant-admin', routeRateLimit.roleBased('tenantadmin'));
   app.use('/api/user', routeRateLimit.roleBased('user'));
-  
+
   console.log('✅ Role-based rate limiting integration complete');
 }
 
@@ -88,7 +88,7 @@ function roleBasedIntegration(app) {
  */
 function customIntegration(app) {
   const rateLimit = require('express-rate-limit');
-  
+
   // Custom rate limiter for health checks
   const healthCheckLimiter = rateLimit({
     windowMs: 1 * 60 * 1000, // 1 minute
@@ -97,7 +97,7 @@ function customIntegration(app) {
     standardHeaders: true,
     legacyHeaders: false
   });
-  
+
   // Custom rate limiter for reporting
   const reportLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
@@ -106,10 +106,10 @@ function customIntegration(app) {
     standardHeaders: true,
     legacyHeaders: false
   });
-  
+
   app.use('/health', healthCheckLimiter);
   app.use('/api/reports', reportLimiter);
-  
+
   console.log('✅ Custom rate limiting integration complete');
 }
 
@@ -119,7 +119,7 @@ function customIntegration(app) {
  */
 function environmentAwareIntegration(app) {
   const env = process.env.NODE_ENV || 'development';
-  
+
   if (env === 'production') {
     // Stricter limits in production
     setupAllRateLimiting(app);
@@ -144,14 +144,14 @@ function existingMiddlewareIntegration(app) {
   app.use(require('cors')());
   app.use(require('express').json());
   app.use(require('express').urlencoded({ extended: true }));
-  
+
   // Apply rate limiting early in the chain
   setupAllRateLimiting(app);
-  
+
   // Your existing routes and other middleware
   // app.use('/api', apiRoutes);
   // app.use('/auth', authRoutes);
-  
+
   console.log('✅ Existing middleware integration complete');
 }
 
@@ -162,17 +162,17 @@ function existingMiddlewareIntegration(app) {
 function testingIntegration(app) {
   // Apply rate limiting
   setupAllRateLimiting(app);
-  
+
   // Add test routes to verify rate limiting
   app.get('/test/rate-limit', (req, res) => {
-    res.json({ 
+    res.json({
       message: 'Rate limit test endpoint',
       ip: req.ip,
       userAgent: req.get('User-Agent'),
       timestamp: new Date().toISOString()
     });
   });
-  
+
   // Add a route to check current rate limit status
   app.get('/test/rate-limit/status', (req, res) => {
     if (req.rateLimit) {
@@ -186,7 +186,7 @@ function testingIntegration(app) {
       res.json({ message: 'No rate limit information available' });
     }
   });
-  
+
   console.log('✅ Testing integration complete');
 }
 
@@ -200,4 +200,4 @@ module.exports = {
   environmentAwareIntegration,
   existingMiddlewareIntegration,
   testingIntegration
-}; 
+};
