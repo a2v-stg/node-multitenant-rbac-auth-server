@@ -3,5 +3,8 @@ module.exports = {
   errorHandler: require('./errorHandler'),
   rbac: require('./rbacMiddleware'),
   tenantValidation: require('./tenantValidation'),
-  validation: require('./validation')
+  validation: require('./validation'),
+  rateLimit: require('./rateLimit'),
+  routeRateLimit: require('./routeRateLimit'),
+  setupRateLimit: require('./setupRateLimit')
 }; 
