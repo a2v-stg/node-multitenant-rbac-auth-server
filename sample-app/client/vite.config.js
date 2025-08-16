@@ -6,16 +6,16 @@ export default defineConfig({
   plugins: [vue()],
   server: {
     port: 3001,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:3000',
-        changeOrigin: true,
-        secure: false
-      },
-      '/auth': {
-        target: 'http://localhost:3000',
-        changeOrigin: true,
-        secure: false
+    // Proxy removed since client and server will run on same port
+  },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    // Ensure assets are built with relative paths for single-port deployment
+    assetsInlineLimit: 4096,
+    rollupOptions: {
+      output: {
+        manualChunks: undefined, // Disable code splitting for simpler deployment
       }
     }
   },

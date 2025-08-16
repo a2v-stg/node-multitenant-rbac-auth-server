@@ -1,7 +1,16 @@
 const express = require('express');
+const passport = require('passport');
 const { getContext } = require('../context');
+const { body, validationResult } = require('express-validator');
 
 const router = express.Router();
+
+// Helper function to generate redirect URLs
+function getRedirectUrl(path) {
+  // Get base URL from environment or default to localhost:3000
+  const baseUrl = process.env.CLIENT_BASE_URL || process.env.BASE_URL || 'http://localhost:3000';
+  return `${baseUrl}${path}`;
+}
 
 router.get('/login', (req, res) => res.render('login'));
 
@@ -72,7 +81,7 @@ router.post('/login', async (req, res, next) => {
                     // tenantId: result.tenant.tenantId
                   };
                   logger.mfa('Returning MFA setup redirect');
-                  res.json({ redirectUrl: 'http://localhost:3001/mfa-setup' });
+                  res.json({ redirectUrl: getRedirectUrl('/mfa-setup') });
                 } else if (result.type === 'mfa_required') {
                   // Store user info in session for MFA verification
                   req.session.mfaUser = {
@@ -81,7 +90,7 @@ router.post('/login', async (req, res, next) => {
                     mfaMethod: user.mfaMethod
                   };
                   logger.mfa('Returning MFA verification redirect');
-                  res.json({ redirectUrl: 'http://localhost:3001/mfa?mfa=true' });
+                  res.json({ redirectUrl: getRedirectUrl('/mfa?mfa=true') });
                 } else if (result.type === 'single') {
                   // Set tenant in session for single tenant users
                   req.session.tenantId = result.tenant.tenantId;
@@ -90,10 +99,10 @@ router.post('/login', async (req, res, next) => {
                   res.json({ redirectUrl: result.redirectUrl });
                 } else if (result.type === 'multiple_tenants') {
                   logger.auth('Returning tenant selection redirect');
-                  res.json({ redirectUrl: 'http://localhost:3001/tenant-selection' });
+                  res.json({ redirectUrl: getRedirectUrl('/tenant-selection') });
                 } else {
                   logger.auth('Unknown result type, returning dashboard redirect');
-                  res.json({ redirectUrl: 'http://localhost:3001/dashboard' });
+                  res.json({ redirectUrl: getRedirectUrl('/dashboard') });
                 }
               } catch (error) {
                 logger.error('Error in login handler:', error);
@@ -248,7 +257,7 @@ router.get(
   (req, res, next) => {
     const passport = require('passport');
     passport.authenticate('oauth2', {
-      failureRedirect: 'http://localhost:3001/login'
+              failureRedirect: getRedirectUrl('/login')
     })(req, res, next);
   },
   async (req, res) => {
@@ -268,7 +277,7 @@ router.get(
           tenantId: result.tenant.tenantId
         };
         logger.mfa('Redirecting to MFA setup');
-        res.redirect('http://localhost:3001/mfa-setup');
+        res.redirect(getRedirectUrl('/mfa-setup'));
       } else if (result.type === 'mfa_required') {
         // Store user info in session for MFA verification
         req.session.mfaUser = {
@@ -277,17 +286,17 @@ router.get(
           mfaMethod: req.user.mfaMethod
         };
         logger.mfa('Redirecting to MFA');
-        res.redirect('http://localhost:3001/mfa?mfa=true');
+        res.redirect(getRedirectUrl('/mfa?mfa=true'));
       } else if (result.type === 'single') {
         req.session.tenantId = result.tenant.tenantId;
         logger.auth('Redirecting to dashboard');
-        res.redirect('http://localhost:3001/dashboard');
+        res.redirect(getRedirectUrl('/dashboard'));
       } else if (result.type === 'multiple_tenants') {
         logger.auth('Redirecting to tenant selection');
-        res.redirect('http://localhost:3001/tenant-selection');
+        res.redirect(getRedirectUrl('/tenant-selection'));
       } else {
         logger.auth('Unknown result type, redirecting to dashboard');
-        res.redirect('http://localhost:3001/dashboard');
+        res.redirect(getRedirectUrl('/dashboard'));
       }
     } catch (error) {
       const context = getContext();
@@ -558,7 +567,7 @@ router.post('/mfa-verify-login', async (req, res) => {
     } else {
       res.json({
         success: true,
-        redirectUrl: 'http://localhost:3001/tenant-selection'
+        redirectUrl: getRedirectUrl('/tenant-selection')
       });
     }
   } catch (error) {
@@ -787,7 +796,7 @@ router.get('/check-user', async (req, res) => {
 });
 
 router.get('/logout', (req, res) => {
-  req.logout(() => res.redirect('http://localhost:3001/login'));
+      req.logout(() => res.redirect(getRedirectUrl('/login')));
 });
 
 // Vue.js login page
@@ -1076,8 +1085,12 @@ router.post(
                   email: req.user.email,
                   tenantId: result.tenant.tenantId
                 };
-                logger.mfa('Redirecting to MFA setup after tenant selection');
-                res.redirect('http://localhost:3001/mfa-setup');
+                logger.mfa('MFA setup required after tenant selection');
+                res.json({
+                  success: true,
+                  type: 'mfa_setup_required',
+                  redirectUrl: getRedirectUrl('/mfa-setup')
+                });
               } else if (result.type === 'mfa_required') {
                 // Store user info in session for MFA verification
                 req.session.mfaUser = {
@@ -1085,20 +1098,36 @@ router.post(
                   email: req.user.email,
                   mfaMethod: req.user.mfaMethod
                 };
-                logger.mfa('Redirecting to MFA verification after tenant selection');
-                res.redirect('http://localhost:3001/mfa');
+                logger.mfa('MFA verification required after tenant selection');
+                res.json({
+                  success: true,
+                  type: 'mfa_required',
+                  redirectUrl: getRedirectUrl('/mfa')
+                });
               } else if (result.type === 'success') {
                 // Set tenant in session
                 req.session.tenantId = tenantId;
-                logger.auth('Redirecting to dashboard after tenant selection');
-                res.redirect('http://localhost:3001/dashboard');
+                logger.auth('Tenant selection successful, returning redirect URL');
+                res.json({
+                  success: true,
+                  type: 'success',
+                  redirectUrl: getRedirectUrl('/dashboard')
+                });
               } else {
                 logger.error('Unknown result type from tenant selection:', result);
-                res.redirect('http://localhost:3001/tenant-selection');
+                res.json({
+                  success: false,
+                  type: 'error',
+                  redirectUrl: getRedirectUrl('/tenant-selection')
+                });
               }
             } catch (error) {
               logger.error('Error in tenant selection:', error);
-              res.redirect('http://localhost:3001/tenant-selection');
+              res.json({
+                success: false,
+                type: 'error',
+                redirectUrl: getRedirectUrl('/tenant-selection')
+              });
             }
           });
         }

@@ -1,10 +1,21 @@
 const { getContext } = require('../context');
 const rbacService = require('./rbacService');
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+const speakeasy = require('speakeasy');
+const qrcode = require('qrcode');
 
 class AuthService {
   constructor() {
     this.context = null;
     this.models = null;
+  }
+
+  // Helper function to generate redirect URLs
+  _getRedirectUrl(path) {
+    // Get base URL from environment or default to localhost:3000
+    const baseUrl = process.env.CLIENT_BASE_URL || process.env.BASE_URL || 'http://localhost:3000';
+    return `${baseUrl}${path}`;
   }
 
   _getContext() {
@@ -48,14 +59,14 @@ class AuthService {
           return {
             type: 'mfa_setup_required',
             user,
-            redirectUrl: 'http://localhost:3001/mfa-setup'
+            redirectUrl: this._getRedirectUrl('/mfa-setup')
           };
         } else {
           // MFA verification required at organization level
           return {
             type: 'mfa_required',
             user,
-            redirectUrl: 'http://localhost:3001/mfa'
+            redirectUrl: this._getRedirectUrl('/mfa')
           };
         }
       }
@@ -86,7 +97,7 @@ class AuthService {
         return {
           type: 'multiple_tenants',
           tenants: userTenants.map(ut => ut.tenant),
-          redirectUrl: 'http://localhost:3001/tenant-selection'
+          redirectUrl: this._getRedirectUrl('/tenant-selection')
         };
       }
 
@@ -120,7 +131,7 @@ class AuthService {
       return {
         type: 'single',
         tenant: selectedTenant,
-        redirectUrl: 'http://localhost:3001/dashboard'
+        redirectUrl: this._getRedirectUrl('/dashboard')
       };
     } catch (error) {
       throw new Error(`OAuth login processing failed: ${error.message}`);
@@ -144,7 +155,7 @@ class AuthService {
         return {
           type: 'multiple_tenants',
           tenants: userTenants.map(ut => ut.tenant),
-          redirectUrl: 'http://localhost:3001/tenant-selection'
+          redirectUrl: this._getRedirectUrl('/tenant-selection')
         };
       }
 
@@ -179,7 +190,7 @@ class AuthService {
       return {
         type: 'single',
         tenant: selectedTenant,
-        redirectUrl: 'http://localhost:3001/dashboard'
+        redirectUrl: this._getRedirectUrl('/dashboard')
       };
     } catch (error) {
       throw new Error(`Tenant selection failed: ${error.message}`);
@@ -371,7 +382,7 @@ class AuthService {
             type: 'mfa_setup_required',
             user,
             tenant,
-            redirectUrl: 'http://localhost:3001/mfa-setup'
+            redirectUrl: this._getRedirectUrl('/mfa-setup')
           };
         } else {
           console.log('MFA required');
@@ -379,7 +390,7 @@ class AuthService {
             type: 'mfa_required',
             user,
             tenant,
-            redirectUrl: 'http://localhost:3001/mfa'
+            redirectUrl: this._getRedirectUrl('/mfa')
           };
         }
       }
@@ -387,7 +398,7 @@ class AuthService {
       return {
         type: 'success',
         tenant,
-        redirectUrl: 'http://localhost:3001/dashboard'
+        redirectUrl: this._getRedirectUrl('/dashboard')
       };
     } catch (error) {
       throw new Error(`Tenant selection failed: ${error.message}`);

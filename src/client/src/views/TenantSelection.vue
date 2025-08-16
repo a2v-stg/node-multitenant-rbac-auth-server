@@ -1,6 +1,13 @@
 <template>
   <div class="tenant-selection-container">
-    <div class="row justify-content-center align-items-center min-vh-100">
+    <!-- Simple test to see if component renders -->
+    <div v-if="componentError" class="alert alert-danger m-3">
+      <h4>Component Error</h4>
+      <p>{{ componentError }}</p>
+      <button @click="retryMount" class="btn btn-primary">Retry</button>
+    </div>
+    
+    <div v-else class="row justify-content-center align-items-center min-vh-100">
       <div class="col-lg-6 col-md-8 col-sm-10">
         <div class="tenant-selection-card">
           <div class="text-center mb-4">
@@ -82,131 +89,210 @@
   export default {
     name: 'TenantSelection',
     setup() {
-      const router = useRouter()
-
+      // Declare all variables outside try block so they're accessible everywhere
+      let router = null
       const tenants = ref([])
       const selectedTenant = ref('')
       const loading = ref(false)
       const error = ref('')
-
-      const loadTenants = async () => {
+      const componentError = ref('')
+      
+      try {
+        // Try to get router, but don't crash if it's not available
         try {
-          const response = await axios.get('/auth/available-tenants')
-          tenants.value = response.data.tenants || []
-          console.log('Available tenants:', tenants.value)
-
-          // If only one tenant, auto-select it but let the user see the selection
-          if (tenants.value.length === 1) {
-            selectedTenant.value = tenants.value[0].tenantId
-            console.log(
-              'Auto-selected single tenant:',
-              tenants.value[0].tenantName
-            )
-          }
-        } catch (error) {
-          console.error('Error loading tenants:', error)
-          error.value = 'Failed to load available tenants'
+          router = useRouter()
+          console.log('🔍 Router initialized:', router)
+          console.log('🔍 Router.push available:', typeof router?.push)
+        } catch (routerError) {
+          console.warn('🔍 Router not available, using fallback navigation:', routerError)
+          router = null
         }
-      }
 
-      // Watch for auto-selection and automatically confirm
-      watch(selectedTenant, async newTenantId => {
-        if (newTenantId && tenants.value.length === 1) {
-          const tenant = tenants.value.find(t => t.tenantId === newTenantId)
-          if (tenant) {
-            console.log('Auto-confirming single tenant:', tenant.tenantName)
-            await confirmTenant(tenant)
-          }
-        }
-      })
-
-      const selectTenant = tenant => {
-        selectedTenant.value = tenant.tenantId
-      }
-
-      const confirmTenant = async tenant => {
-        loading.value = true
-        error.value = ''
-
-        try {
-          console.log('Selecting tenant:', tenant.tenantId)
-
-          // Call backend to select tenant
-          const response = await axios.post(
-            '/auth/select-tenant',
-            {
-              tenantId: tenant.tenantId,
-            },
-            {
-              maxRedirects: 0,
-              validateStatus: function (status) {
-                return status >= 200 && status < 400 // Accept redirects
-              },
-            }
-          )
-          console.log('Tenant selection response:', response)
-          console.log('Response status:', response.status)
-          console.log('Response headers:', response.headers)
-
-          // The backend will handle the redirect based on MFA requirements
-          // We just need to follow the redirect
-          if (response.status === 302 || response.status === 200) {
-            const redirectUrl = response.headers.location
-            console.log('Redirect URL:', redirectUrl)
-            if (redirectUrl) {
-              window.location.href = redirectUrl
+        // Safe navigation function
+        const safeNavigate = (path) => {
+          try {
+            if (router && typeof router.push === 'function') {
+              console.log('🔍 Using router.push for navigation to:', path)
+              router.push(path)
             } else {
-              // Fallback to dashboard if no redirect
-              console.log('No redirect URL, going to dashboard')
-              router.push('/dashboard')
+              console.log('🔍 Router not available, using window.location to:', path)
+              window.location.href = path
+            }
+          } catch (navError) {
+            console.error('🔍 Navigation error, falling back to window.location:', navError)
+            window.location.href = path
+          }
+        }
+
+        const loadTenants = async () => {
+          try {
+            const response = await axios.get('/auth/available-tenants')
+            tenants.value = response.data.tenants || []
+            console.log('Available tenants:', tenants.value)
+
+            // If only one tenant, auto-select it but let the user see the selection
+            if (tenants.value.length === 1) {
+              selectedTenant.value = tenants.value[0].tenantId
+              console.log(
+                'Auto-selected single tenant:',
+                tenants.value[0].tenantName
+              )
+            }
+          } catch (err) {
+            console.error('Error loading tenants:', err)
+            error.value = 'Failed to load available tenants'
+          }
+        }
+
+        // Watch for auto-selection and automatically confirm
+        watch(selectedTenant, async newTenantId => {
+          if (newTenantId && tenants.value.length === 1) {
+            const tenant = tenants.value.find(t => t.tenantId === newTenantId)
+            if (tenant) {
+              console.log('Auto-confirming single tenant:', tenant.tenantName)
+              await confirmTenant(tenant)
             }
           }
-        } catch (error) {
-          console.error('Error selecting tenant:', error)
-          console.error('Error response:', error.response)
-          if (error.response?.data?.error) {
-            error.value = error.response.data.error
-          } else if (error.response?.status === 401) {
-            error.value = 'Authentication failed. Please login again.'
-            router.push('/login')
-          } else {
-            error.value = 'Failed to select tenant. Please try again.'
-          }
-        } finally {
-          loading.value = false
+        })
+
+        const selectTenant = tenant => {
+          selectedTenant.value = tenant.tenantId
         }
-      }
 
-      const logout = () => {
-        sessionStorage.clear()
-        window.location.href = '/auth/logout'
-      }
+        const confirmTenant = async tenant => {
+          loading.value = true
+          error.value = ''
 
-      onMounted(async () => {
-        // Check if user is authenticated by calling the current-user endpoint
-        try {
-          const response = await axios.get('/auth/current-user')
-          if (response.data.user) {
-            console.log('✅ User authenticated:', response.data.user.email)
-            await loadTenants()
-          } else {
-            console.log('❌ User not authenticated, redirecting to login')
-            router.push('/login')
+          try {
+            console.log('Selecting tenant:', tenant.tenantId)
+
+            // Call backend to select tenant
+            const response = await axios.post(
+              '/auth/select-tenant',
+              {
+                tenantId: tenant.tenantId,
+              }
+            )
+            console.log('Tenant selection response:', response)
+            console.log('Response status:', response.status)
+            console.log('Response headers:', response.headers)
+
+            // The backend now returns JSON with redirect information
+            // We need to handle the response and navigate accordingly
+            if (response.status === 200) {
+              const data = response.data
+              console.log('Tenant selection response data:', data)
+              
+              if (data.success && data.redirectUrl) {
+                console.log('Redirect URL from response:', data.redirectUrl)
+                
+                // Debug router state
+                console.log('🔍 Router state before navigation:', router)
+                console.log('🔍 Router.push available:', typeof router?.push)
+                
+                // Extract the path from the full URL
+                const path = data.redirectUrl.replace(window.location.origin, '')
+                console.log('🔍 Extracted path:', path)
+                
+                // Try router.push first, fallback to window.location if needed
+                safeNavigate(path)
+              } else {
+                console.log('No redirect URL in response, going to dashboard')
+                safeNavigate('/dashboard')
+              }
+            } else {
+              // Fallback to dashboard if unexpected status
+              console.log('Unexpected response status, going to dashboard')
+              safeNavigate('/dashboard')
+            }
+          } catch (err) {
+            console.error('Error selecting tenant:', err)
+            console.error('Error response:', err.response)
+            if (err.response?.data?.error) {
+              error.value = err.response.data.error
+            } else if (err.response?.status === 401) {
+              error.value = 'Authentication failed. Please login again.'
+              safeNavigate('/login')
+            } else {
+              error.value = 'Failed to select tenant. Please try again.'
+            }
+          } finally {
+            loading.value = false
           }
-        } catch (error) {
-          console.log('❌ Authentication check failed, redirecting to login')
-          router.push('/login')
         }
-      })
 
-      return {
-        tenants,
-        selectedTenant,
-        loading,
-        error,
-        selectTenant,
-        confirmTenant,
-        logout,
+        const logout = () => {
+          sessionStorage.clear()
+          window.location.href = '/auth/logout'
+        }
+
+        const retryMount = () => {
+          componentError.value = ''
+          onMounted(async () => {
+            try {
+              // Check if user is authenticated by calling the current-user endpoint
+              const response = await axios.get('/auth/current-user')
+              if (response.data.user) {
+                console.log('✅ User authenticated:', response.data.user.email)
+                await loadTenants()
+              } else {
+                console.log('❌ User not authenticated, redirecting to login')
+                safeNavigate('/login')
+              }
+            } catch (err) {
+              console.log('❌ Authentication check failed, redirecting to login')
+              safeNavigate('/login')
+            }
+          })
+        }
+
+        onMounted(async () => {
+          try {
+            // Check if user is authenticated by calling the current-user endpoint
+            const response = await axios.get('/auth/current-user')
+            if (response.data.user) {
+              console.log('✅ User authenticated:', response.data.user.email)
+              await loadTenants()
+            } else {
+              console.log('❌ User not authenticated, redirecting to login')
+              safeNavigate('/login')
+            }
+          } catch (err) {
+            console.log('❌ Authentication check failed, redirecting to login')
+            safeNavigate('/login')
+          }
+        })
+
+        // Return all functions and variables
+        return {
+          tenants,
+          selectedTenant,
+          loading,
+          error,
+          selectTenant,
+          confirmTenant,
+          logout,
+          safeNavigate,
+          componentError,
+          retryMount,
+        }
+      } catch (setupError) {
+        console.error('🔍 Setup error in TenantSelection:', setupError)
+        componentError.value = `Component setup failed: ${setupError.message}`
+        
+        // Return minimal functionality
+        return {
+          tenants: ref([]),
+          selectedTenant: ref(''),
+          loading: ref(false),
+          error: ref(''),
+          componentError: ref(setupError.message),
+          selectTenant: () => {},
+          confirmTenant: () => {},
+          logout: () => window.location.href = '/auth/logout',
+          safeNavigate: (path) => window.location.href = path,
+          retryMount: () => window.location.reload(),
+        }
       }
     },
   }

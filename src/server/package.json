@@ -8,6 +8,8 @@
     "standalone": "NODE_ENV=development nodemon standalone.js",
     "standalone:prod": "NODE_ENV=production node standalone.js",
     "prod": "NODE_ENV=production node app.js",
+    "build:client": "node scripts/build-client.js",
+    "build:client:standalone": "node scripts/build-client.js",
     "init-db": "node scripts/data-setup/initDb.js",
     "migrate": "node scripts/migrate.js migrate",
     "migrate:status": "node scripts/migrate.js status",

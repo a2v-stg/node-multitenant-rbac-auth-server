@@ -1,3 +1,10 @@
+// Helper function to generate redirect URLs
+function getRedirectUrl(path) {
+  // Get base URL from environment or default to localhost:3000
+  const baseUrl = process.env.CLIENT_BASE_URL || process.env.BASE_URL || 'http://localhost:3000';
+  return `${baseUrl}${path}`;
+}
+
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
@@ -12,7 +19,7 @@ function ensureAuthenticated(req, res, next) {
   }
 
   // For page requests, redirect to Vue app login
-  res.redirect('http://localhost:3001/login');
+  res.redirect(getRedirectUrl('/login'));
 }
 
 function ensureAuthenticatedAndTenant(req, res, next) {
@@ -26,7 +33,7 @@ function ensureAuthenticatedAndTenant(req, res, next) {
     }
     console.log('redirecting to login');
     // For page requests, redirect to Vue app login
-    return res.redirect('http://localhost:3001/login');
+    return res.redirect(getRedirectUrl('/login'));
   }
 
   if (!req.session.tenantId) {
@@ -39,7 +46,7 @@ function ensureAuthenticatedAndTenant(req, res, next) {
     }
 
     // For page requests, redirect to Vue app login
-    return res.redirect('http://localhost:3001/login');
+    return res.redirect(getRedirectUrl('/login'));
   }
 
   next();

@@ -9,6 +9,7 @@ const path = require('path');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const MongoStore = require('connect-mongo');
+const fs = require('fs'); // Added for file system operations
 
 // Load environment variables from the root directory FIRST
 dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
@@ -60,7 +61,11 @@ const app = express();
 // Configure CORS
 app.use(
   cors({
-    origin: ['http://localhost:3001', 'http://localhost:3000'],
+    origin: [
+      'http://localhost:3000', 
+      process.env.CLIENT_BASE_URL || process.env.BASE_URL || 'http://localhost:3000',
+      'http://localhost:5173'
+    ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
@@ -159,10 +164,26 @@ async function initializeApp() {
   console.log('🔧 Connecting to database...');
   const dbConnected = await connectToDatabase();
   
-  if (!dbConnected) {
-    console.log('⚠️ Warning: Database not connected. Some features may not work.');
-  } else {
+  if (dbConnected) {
     console.log('✅ Database connection established and ready');
+  } else {
+    console.log('⚠️ Warning: Database not connected. Some features may not work.');
+  }
+
+  // Check if client is already built
+  let clientDistPath;
+  const expectedClientDistPath = path.join(__dirname, '..', 'client', 'dist');
+  
+  if (fs.existsSync(expectedClientDistPath) && fs.existsSync(path.join(expectedClientDistPath, 'index.html'))) {
+    console.log('✅ Sample-app client already built, using existing build');
+    clientDistPath = expectedClientDistPath;
+    
+    // Serve static files from the built client
+    app.use(express.static(clientDistPath));
+  } else {
+    console.log('🔧 Sample-app client not found, cannot proceed without client build');
+    console.error('❌ Sample-app client application not found at expected path. Please ensure client is built using: npm run build:standalone');
+    process.exit(1);
   }
 
   // Initialize admin-ui submodule with dependencies
@@ -239,13 +260,58 @@ async function initializeApp() {
   app.use(ensureTenantSelected);
   app.use('/', adminRoutes);
 
+  // Handle client-side routing - serve index.html for all non-API routes
+  // This should come AFTER the API routes to avoid conflicts
+  app.get('*', (req, res) => {
+    // Define which routes are API endpoints vs UI routes
+    const isApiRoute = req.path.startsWith('/api');
+    
+    // Only specific auth routes are API endpoints, others are UI routes
+    const isAuthApiRoute = req.path.startsWith('/auth') && (
+      req.path === '/auth/login' ||
+      req.path === '/auth/logout' ||
+      req.path.startsWith('/auth/mfa') ||
+      req.path.startsWith('/auth/oauth') ||
+      req.path === '/auth/callback' ||
+      req.path === '/auth/verify' ||
+      req.path === '/auth/select-tenant' ||  // This is an API endpoint!
+      req.path === '/auth/tenant-selection'  // This is an API endpoint!
+    );
+    
+    // Sample-app specific API routes
+    const isSampleAppApiRoute = req.path.startsWith('/api/core') || req.path === '/api/health';
+    
+    // Debug route classification (only in development)
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`🔍 Route classification: ${req.path} -> API: ${isApiRoute}, Auth API: ${isAuthApiRoute}, Sample App API: ${isSampleAppApiRoute}`);
+    }
+    
+    // Skip API routes - these should already be handled above
+    if (isApiRoute || isAuthApiRoute || isSampleAppApiRoute) {
+      return res.status(404).json({ error: 'API endpoint not found' });
+    }
+    
+    // For all other routes (UI routes only),
+    // serve the client's index.html to enable client-side routing
+    const indexPath = path.join(clientDistPath, 'index.html');
+    if (fs.existsSync(indexPath)) {
+      res.sendFile(indexPath);
+    } else {
+      res.status(404).send('Client application not found');
+    }
+  });
+
   // Global error handler (must be last)
   app.use(errorHandler);
 
   const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () =>
-    console.log(`Sample App Server started on http://localhost:${PORT}`)
-  );
+  app.listen(PORT, () => {
+    console.log(`🚀 Sample App Server started on http://localhost:${PORT}`);
+    console.log(`📱 Sample-app client application served from: ${clientDistPath}`);
+    console.log(`🔐 Login: http://localhost:${PORT}/login`);
+    console.log(`⚙️  API: http://localhost:${PORT}/api`);
+    console.log(`📊 Dashboard: http://localhost:${PORT}/dashboard`);
+  });
 }
 
 // Start the application

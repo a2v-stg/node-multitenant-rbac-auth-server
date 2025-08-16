@@ -36,8 +36,12 @@ This repository has been consolidated to reduce redundancy and improve maintaina
 
 #### Root Level (admin-ui/)
 ```bash
-# Development
-npm run dev                    # Start both client and server in development
+# Development (Single Container - Recommended)
+npm run dev                   # Start standalone server (builds client + serves on port 3000)
+npm run standalone            # Start standalone server
+npm run standalone:start       # Start standalone server in production mode
+
+# Development (Multi-Process - Legacy)
 npm run dev:server            # Start server only in development
 npm run dev:client            # Start client only in development
 
@@ -97,6 +101,30 @@ npm run install:all
 ```
 
 ## Quick Start
+
+### Single Container Deployment (Recommended)
+
+The application now supports running as a single container with both client and server on the same port:
+
+```bash
+# Install dependencies
+npm run install:all
+
+# Start the standalone server (builds client + serves everything on port 3000)
+npm run dev
+
+# Or use Docker
+./deploy.sh full
+```
+
+**Benefits:**
+- ✅ Single port (3000) for everything
+- ✅ No need for `concurrently` or multiple processes
+- ✅ Perfect for containerized deployments
+- ✅ Built client served as static files
+- ✅ Simplified deployment and management
+
+See [SINGLE_CONTAINER_README.md](./documentation/SINGLE_CONTAINER_README.md) for detailed deployment instructions.
 
 ### As a Submodule
 

@@ -4,21 +4,14 @@
   "description": "Sample application that demonstrates how to use admin-ui as a submodule",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
-    "dev:server": "cd server && npm run dev",
-    "dev:client": "cd client && npm run dev",
+    "dev": "cd server && npm run dev",
+    "start": "cd server && npm start",
     "build": "npm run build:client",
     "build:client": "cd client && npm run build",
-    "start": "concurrently \"npm run start:server\" \"npm run start:client\"",
-    "start:server": "cd server && npm start",
-    "start:client": "cd client && npm run preview",
+    "build:standalone": "cd server && node scripts/build-client.js",
     "install:all": "npm install && cd server && npm install && cd ../client && npm install",
     "clean": "rm -rf node_modules server/node_modules client/node_modules package-lock.json server/package-lock.json client/package-lock.json"
   },
-  "dependencies": {
-    "concurrently": "^8.2.2"
-  },
-  "devDependencies": {
-    "concurrently": "^8.2.2"
-  }
+  "dependencies": {},
+  "devDependencies": {}
 } 

@@ -186,18 +186,41 @@ export default {
    ```
 
 2. **Start the application:**
+
+   **Option A: Single Container (Recommended)**
    ```bash
    # From root directory
    npm run sample-app:dev
    
    # Or from sample-app directory
    cd sample-app
-   npm run dev
+   npm run dev  # This now runs the standalone server
+   ```
+   
+   **Option B: Docker Container**
+   ```bash
+   cd sample-app
+   ./deploy.sh full
+   ```
+   
+   **Option C: Multi-Process (Legacy)**
+   ```bash
+   # From root directory
+   npm run sample-app:dev
+   
+   # Or from sample-app directory
+   cd sample-app
+   npm run dev:server  # Server on port 3000
+   npm run dev:client  # Client on port 3001
    ```
 
 3. **Access the application:**
-   - **Client**: http://localhost:3001 (Sample app frontend)
-   - **Server**: http://localhost:3000 (Sample app backend)
+   - **Single Container**: Everything on http://localhost:3000
+   - **Multi-Process**: Client on http://localhost:3001, Server on http://localhost:3000
+
+**Note**: The single container approach is now the recommended way to run the sample-app. It eliminates the need for `concurrently` and runs everything on a single port, making it perfect for containerized deployments.
+
+See [SINGLE_CONTAINER_README.md](./SINGLE_CONTAINER_README.md) for detailed deployment instructions.
 
 ### Configuration
 
